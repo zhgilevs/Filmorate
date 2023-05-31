@@ -3,9 +3,13 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.validation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -73,6 +77,20 @@ class FilmControllerTest {
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> fc.create(film));
         assertEquals("Дата релиза должна быть позже 1895-12-28", ex.getMessage(),
+                "Исключение не выброшено");
+    }
+
+    @DisplayName("Дата релиза передана в запросе")
+    @Test
+    void releaseDateIsNotNull() {
+        final Film film = Film.builder()
+                .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION)
+                .releaseDate(null)
+                .build();
+        FilmController fc = new FilmController();
+        ValidationException ex = assertThrows(ValidationException.class,
+                () -> fc.create(film));
+        assertEquals("Дата релиза должна быть передана в запросе", ex.getMessage(),
                 "Исключение не выброшено");
     }
 

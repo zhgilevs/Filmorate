@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.ConstraintViolation;
@@ -12,8 +13,7 @@ import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Тестирование валидации в UserController")
 class UserControllerTest {
@@ -92,6 +92,20 @@ class UserControllerTest {
                 .build();
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(1, violations.size(), VALIDATION_ERROR);
+    }
+
+    @DisplayName("Дата рождения передана в запросе")
+    @Test
+    void birthdayNotNull() {
+        final User user = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN)
+                .birthday(null)
+                .build();
+        UserController uc = new UserController();
+        ValidationException ex = assertThrows(ValidationException.class,
+                () -> uc.create(user));
+        assertEquals("Дата рождения должна быть передана в запросе", ex.getMessage(),
+                "Исключение не выброшено");
     }
 
     @DisplayName("Email не пустой")

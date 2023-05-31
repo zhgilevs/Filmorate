@@ -15,12 +15,14 @@ public class Film {
 
     private int id;
     private int rate;
-    @Size(max = 200, message = "Описание должно быть не более 200 символов")
+    @NonNull
+    @Size(min = 1, max = 200, message = "Описание должно быть не более 200 символов и не менее 1 символа")
     private String description;
+    @NonNull
     @Positive
     private int duration;
     @NotBlank
-    @NonNull
     private String name;
     private LocalDate releaseDate;
+
 }
