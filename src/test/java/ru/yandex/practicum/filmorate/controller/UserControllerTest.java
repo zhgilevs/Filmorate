@@ -5,6 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -67,7 +70,9 @@ class UserControllerTest {
         final User user = User.builder()
                 .name(null).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
-        UserController uc = new UserController();
+        UserStorage storage = new InMemoryUserStorage();
+        UserService service = new UserService(storage);
+        UserController uc = new UserController(service);
         User createdUser = uc.create(user);
         assertEquals(USER_LOGIN, createdUser.getName(), VALIDATION_ERROR);
     }
@@ -78,7 +83,9 @@ class UserControllerTest {
         final User user = User.builder()
                 .name("").email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
-        UserController uc = new UserController();
+        UserStorage storage = new InMemoryUserStorage();
+        UserService service = new UserService(storage);
+        UserController uc = new UserController(service);
         User createdUser = uc.create(user);
         assertEquals(USER_LOGIN, createdUser.getName(), VALIDATION_ERROR);
     }
@@ -101,7 +108,9 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN)
                 .birthday(null)
                 .build();
-        UserController uc = new UserController();
+        UserStorage storage = new InMemoryUserStorage();
+        UserService service = new UserService(storage);
+        UserController uc = new UserController(service);
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> uc.create(user));
         assertEquals("Дата рождения должна быть передана в запросе", ex.getMessage(),

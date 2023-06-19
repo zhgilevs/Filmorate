@@ -8,12 +8,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
 public class User {
 
     private int id;
+    private Set<Integer> friends;
     private String name;
     @NotBlank
     @Email

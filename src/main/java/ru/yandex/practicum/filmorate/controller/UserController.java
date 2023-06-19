@@ -1,65 +1,66 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @Validated
-@Slf4j
 public class UserController {
 
-    private final Map<Integer, User> users = new HashMap<>();
-    private int globalId = 0;
+    private final UserService service;
+
+    @Autowired
+    public UserController(UserService service) {
+        this.service = service;
+    }
 
     @PostMapping
     User create(@RequestBody @Valid User user) {
-        validateBirthday(user);
-        if (StringUtils.isBlank(user.getName())) {
-            user.setName(user.getLogin());
-        }
-        int id = ++globalId;
-        user.setId(id);
-        users.put(id, user);
-        log.info("Пользователь: '{}' создан", user);
-        return user;
+        return service.create(user);
     }
 
     @PutMapping
     User update(@RequestBody @Valid User updatedUser) {
-        validateBirthday(updatedUser);
-        int id = updatedUser.getId();
-        if (!users.containsKey(id)) {
-            log.warn("Пользователя нет в базе");
-            throw new ValidationException("Пользователь с ID: '" + id + "' отсутствует в базе!");
-        }
-        if (StringUtils.isBlank(updatedUser.getName())) {
-            updatedUser.setName(updatedUser.getLogin());
-        }
-        users.put(id, updatedUser);
-        log.info("Пользователь с ID: '{}' обновлен", id);
-        return updatedUser;
+        return service.update(updatedUser);
     }
 
     @GetMapping
     List<User> getAll() {
-        return new ArrayList<>(users.values());
+        return service.getAll();
     }
 
-    private void validateBirthday(User user) {
-        if (user.getBirthday() == null) {
-            log.warn("Дата рождения не передана в запросе");
-            throw new ValidationException("Дата рождения должна быть передана в запросе");
-        }
+    @GetMapping("/{id}")
+    User getById(@PathVariable(value = "id") int id) {
+        return service.getById(id);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    User addToFriends(@PathVariable int id,
+                      @PathVariable int friendId) {
+        return service.addToFriends(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    User removeFromFriends(@PathVariable int id,
+                           @PathVariable int friendId) {
+        return service.removeFromFriends(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    List<User> getFriendList(@PathVariable int id) {
+        return service.getFriendList(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    List<User> getCommonFriends(@PathVariable int id,
+                                @PathVariable int otherId) {
+        return service.getCommonFriends(id, otherId);
     }
 }

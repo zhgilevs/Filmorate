@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
@@ -15,6 +16,8 @@ public class Film {
 
     private int id;
     private int rate;
+    private Set<Integer> likes;
+    private int likesCount;
     @NotBlank
     @Size(min = 1, max = 200, message = "Описание должно быть не более 200 символов и не менее 1 символа")
     private String description;

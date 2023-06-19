@@ -5,6 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -73,7 +78,10 @@ class FilmControllerTest {
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION)
                 .releaseDate(LocalDate.of(1795, 12, 28))
                 .build();
-        FilmController fc = new FilmController();
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        UserStorage userStorage = new InMemoryUserStorage();
+        FilmService service = new FilmService(filmStorage, userStorage);
+        FilmController fc = new FilmController(service);
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> fc.create(film));
         assertEquals("Дата релиза должна быть позже 1895-12-28", ex.getMessage(),
@@ -87,7 +95,10 @@ class FilmControllerTest {
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION)
                 .releaseDate(null)
                 .build();
-        FilmController fc = new FilmController();
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        UserStorage userStorage = new InMemoryUserStorage();
+        FilmService service = new FilmService(filmStorage, userStorage);
+        FilmController fc = new FilmController(service);
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> fc.create(film));
         assertEquals("Дата релиза должна быть передана в запросе", ex.getMessage(),
