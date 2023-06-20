@@ -7,7 +7,10 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -55,12 +58,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film addLike(int id, int userId) {
         Film film = films.get(id);
-        int likesCount = film.getLikesCount();
-        likesCount += 1;
-        film.setLikesCount(likesCount);
-        if (film.getLikes() == null) {
-            film.setLikes(new HashSet<>());
-        }
         film.getLikes().add(userId);
         log.info("Пользователь с ID: '{}' поставил лайк фильму с ID: '{}'", userId, id);
         return film;
@@ -69,9 +66,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film removeLike(int id, int userId) {
         Film film = films.get(id);
-        int likesCount = film.getLikesCount();
-        likesCount -= 1;
-        film.setLikesCount(likesCount);
         film.getLikes().remove(userId);
         log.info("Пользователь с ID: '{}' удалил лайк с фильма с ID: '{}'", userId, id);
         return film;
@@ -81,7 +75,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getPopular(int count) {
         log.info("Запрошен список {} самых популярных фильмов", count);
         return films.values().stream()
-                .sorted((film1, film2) -> film2.getLikesCount() - film1.getLikesCount())
+                .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
                 .limit(count)
                 .collect(Collectors.toList());
     }

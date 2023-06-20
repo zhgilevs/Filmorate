@@ -61,13 +61,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User addToFriends(int userId, int friendId) {
         User user = users.get(userId);
         User friend = users.get(friendId);
-        if (user.getFriends() == null) {
-            user.setFriends(new HashSet<>());
-        }
         user.getFriends().add(friendId);
-        if (friend.getFriends() == null) {
-            friend.setFriends(new HashSet<>());
-        }
         friend.getFriends().add(userId);
         log.info("Пользователи с ID: '{}', '{}' добавили друг друга в друзья", userId, friendId);
         return user;
@@ -85,43 +79,37 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getFriendList(int id) {
-        List<User> friendList = new ArrayList<>();
-        User user = users.get(id);
-        for (int friendId : user.getFriends()) {
-            friendList.add(users.get(friendId));
-        }
         log.info("Запрошен список друзей пользователя с ID: '{}'", id);
-        return friendList;
+        return users.get(id).getFriends().stream()
+                .map(users::get)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<User> getCommonFriends(int id, int otherId) {
-        User userOne = users.get(id);
-        User userTwo = users.get(otherId);
-        Set<Integer> userOneFriends = userOne.getFriends();
-        Set<Integer> userTwoFriends = userTwo.getFriends();
-        if (userOneFriends == null || userOneFriends.isEmpty()) {
+        final User userOne = users.get(id);
+        final User userTwo = users.get(otherId);
+        final Set<Integer> userOneFriends = userOne.getFriends();
+        final Set<Integer> userTwoFriends = userTwo.getFriends();
+        if (userOneFriends.isEmpty()) {
             log.info("У пользователя с ID: '{}' нет друзей", id);
             return Collections.emptyList();
         }
-        if (userTwoFriends == null || userTwoFriends.isEmpty()) {
+        if (userTwoFriends.isEmpty()) {
             log.info("У пользователя с ID: '{}' нет друзей", otherId);
             return Collections.emptyList();
         }
-        List<User> commonFriends = new ArrayList<>();
-        List<Integer> result = userOne.getFriends().stream()
-                .filter(userId -> userTwo.getFriends().contains(userId))
+        List<User> commonFriends = userOneFriends.stream()
+                .filter(userTwoFriends::contains)
+                .map(users::get)
                 .collect(Collectors.toList());
-        if (result.isEmpty()) {
+        if (commonFriends.isEmpty()) {
             log.info("У пользователей с ID: '{}' и '{}' нет общих друзей", id, otherId);
             return Collections.emptyList();
         } else {
-            for (Integer filteredId : result) {
-                commonFriends.add(users.get(filteredId));
-            }
+            log.info("Запрошен список общих друзей у пользователей с ID: '{}' и '{}'", id, otherId);
+            return commonFriends;
         }
-        log.info("Запрошен список общих друзей у пользователей с ID: '{}' и '{}'", id, otherId);
-        return commonFriends;
     }
 
     @Override

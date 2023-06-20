@@ -5,7 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
@@ -20,19 +22,23 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Тестирование валидации в FilmController")
+@DisplayName("Тестирование FilmController")
 class FilmControllerTest {
 
     private Validator validator;
     private static final String FILM_NAME = "nisi eiusmod";
     private static final String FILM_DESC = "adipisicing";
+    private static final LocalDate FILM_RELEASE = LocalDate.of(1967, 3, 25);
+    private static final int FILM_DURATION = 100;
+    private static final String USER_NAME = "Nick Name";
+    private static final String USER_EMAIL = "mail@mail.ru";
+    private static final String USER_LOGIN = "dolore";
+    private static final LocalDate USER_BIRTHDAY = LocalDate.of(1946, 8, 20);
     private static final String WRONG_DESCRIPTION =
             "Пятеро друзей ( комик-группа «Шарлотка»),"
                     + "приезжают в город Новосибирск. Здесь они хотят разыскать господина Евгения Круглова,"
                     + "который задолжал им деньги, а именно 20 миллионов. о Круглов, который за время «своего отсутствия»"
                     + " стал кандидатом в президенты Колумбии.";
-    private static final LocalDate FILM_RELEASE = LocalDate.of(1967, 3, 25);
-    private static final int FILM_DURATION = 100;
     private static final String VALIDATION_ERROR = "Ошибка валидации";
 
     @BeforeEach
@@ -113,5 +119,87 @@ class FilmControllerTest {
                 .build();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), VALIDATION_ERROR);
+    }
+
+    @DisplayName("Фильм получен по id")
+    @Test
+    void getById() {
+        final Film film = Film.builder()
+                .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .build();
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        UserStorage userStorage = new InMemoryUserStorage();
+        FilmService service = new FilmService(filmStorage, userStorage);
+        FilmController fc = new FilmController(service);
+        assertEquals(1, fc.getById(fc.create(film).getId()).getId());
+    }
+
+    @DisplayName("Фильму поставлен лайк")
+    @Test
+    void setLike() {
+        final Film film = Film.builder()
+                .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .build();
+        final User user = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        UserStorage userStorage = new InMemoryUserStorage();
+        FilmService filmService = new FilmService(filmStorage, userStorage);
+        UserService userService = new UserService(userStorage);
+        FilmController fc = new FilmController(filmService);
+        UserController uc = new UserController(userService);
+        fc.create(film);
+        uc.create(user);
+        fc.setLike(film.getId(), user.getId());
+        assertEquals(1, film.getLikes().size());
+    }
+
+    @DisplayName("У фильма удален лайк")
+    @Test
+    void removeLike() {
+        final Film film = Film.builder()
+                .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .build();
+        final User user = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        UserStorage userStorage = new InMemoryUserStorage();
+        FilmService filmService = new FilmService(filmStorage, userStorage);
+        UserService userService = new UserService(userStorage);
+        FilmController fc = new FilmController(filmService);
+        UserController uc = new UserController(userService);
+        fc.create(film);
+        uc.create(user);
+        fc.setLike(film.getId(), user.getId());
+        fc.removeLike(film.getId(), user.getId());
+        assertEquals(0, film.getLikes().size());
+    }
+
+    @DisplayName("Получен список популярных фильмов")
+    @Test
+    void getPopular() {
+        final Film filmOne = Film.builder()
+                .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .build();
+        final Film filmTwo = Film.builder()
+                .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .build();
+        final User user = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        UserStorage userStorage = new InMemoryUserStorage();
+        FilmService filmService = new FilmService(filmStorage, userStorage);
+        UserService userService = new UserService(userStorage);
+        FilmController fc = new FilmController(filmService);
+        UserController uc = new UserController(userService);
+        fc.create(filmOne);
+        fc.create(filmTwo);
+        uc.create(user);
+        fc.setLike(filmOne.getId(), user.getId());
+        fc.setLike(filmTwo.getId(), user.getId());
+        assertEquals(2, fc.getPopularFilms(10).size());
     }
 }

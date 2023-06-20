@@ -18,7 +18,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Тестирование валидации в UserController")
+@DisplayName("Тестирование UserController")
 class UserControllerTest {
 
     private Validator validator;
@@ -135,5 +135,99 @@ class UserControllerTest {
                 .build();
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(1, violations.size(), VALIDATION_ERROR);
+    }
+
+    @DisplayName("Пользователь получен по id")
+    @Test
+    void getById() {
+        final User user = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        UserStorage storage = new InMemoryUserStorage();
+        UserService service = new UserService(storage);
+        UserController uc = new UserController(service);
+        uc.create(user);
+        assertEquals(1, uc.getById(user.getId()).getId());
+    }
+
+    @DisplayName("Пользователи добавляются в друзья")
+    @Test
+    void addToFriends() {
+        final User user = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        final User friend = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        UserStorage storage = new InMemoryUserStorage();
+        UserService service = new UserService(storage);
+        UserController uc = new UserController(service);
+        uc.create(user);
+        uc.create(friend);
+        uc.addToFriends(user.getId(), friend.getId());
+        assertEquals(1, user.getFriends().size());
+        assertEquals(1, friend.getFriends().size());
+    }
+
+    @DisplayName("Пользователи удаляются из друзей")
+    @Test
+    void removeFromFriends() {
+        final User user = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        final User friend = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        UserStorage storage = new InMemoryUserStorage();
+        UserService service = new UserService(storage);
+        UserController uc = new UserController(service);
+        uc.create(user);
+        uc.create(friend);
+        uc.addToFriends(user.getId(), friend.getId());
+        uc.removeFromFriends(user.getId(), friend.getId());
+        assertEquals(0, user.getFriends().size());
+        assertEquals(0, friend.getFriends().size());
+    }
+
+    @DisplayName("Список друзей пользователя получен")
+    @Test
+    void getFriendList() {
+        final User user = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        final User friend = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        UserStorage storage = new InMemoryUserStorage();
+        UserService service = new UserService(storage);
+        UserController uc = new UserController(service);
+        uc.create(user);
+        uc.create(friend);
+        uc.addToFriends(user.getId(), friend.getId());
+        assertEquals(1, uc.getFriendList(user.getId()).size());
+        assertEquals(1, uc.getFriendList(friend.getId()).size());
+    }
+
+    @DisplayName("Получен список общих друзей")
+    @Test
+    void getCommonFriends() {
+        final User userOne = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        final User userTwo = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        final User commonFriend = User.builder()
+                .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
+                .build();
+        UserStorage storage = new InMemoryUserStorage();
+        UserService service = new UserService(storage);
+        UserController uc = new UserController(service);
+        uc.create(userOne);
+        uc.create(userTwo);
+        uc.create(commonFriend);
+        uc.addToFriends(userOne.getId(), commonFriend.getId());
+        uc.addToFriends(userTwo.getId(), commonFriend.getId());
+        assertEquals(1, uc.getCommonFriends(userOne.getId(), userTwo.getId()).size());
     }
 }
