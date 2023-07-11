@@ -1,16 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+@Component("InMemoryUserStorage")
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
@@ -25,10 +23,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        validateBirthday(user);
-        if (StringUtils.isBlank(user.getName())) {
-            user.setName(user.getLogin());
-        }
         int id = ++globalId;
         user.setId(id);
         users.put(id, user);
@@ -38,13 +32,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User update(User updatedUser) {
-        validateBirthday(updatedUser);
         int id = updatedUser.getId();
         if (!users.containsKey(id)) {
             throw new NotFoundException("Пользователь с ID: '" + id + "' не найден");
-        }
-        if (StringUtils.isBlank(updatedUser.getName())) {
-            updatedUser.setName(updatedUser.getLogin());
         }
         users.put(id, updatedUser);
         log.info("Пользователь с ID: '{}' обновлен", id);
@@ -115,11 +105,5 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public boolean isExists(int id) {
         return users.containsKey(id);
-    }
-
-    private void validateBirthday(User user) {
-        if (user.getBirthday() == null) {
-            throw new ValidationException("Дата рождения должна быть передана в запросе");
-        }
     }
 }

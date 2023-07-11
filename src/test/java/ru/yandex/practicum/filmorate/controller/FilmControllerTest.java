@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -52,6 +53,7 @@ class FilmControllerTest {
     void correctFilm() {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .mpa(new Mpa(1, null, null))
                 .build();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertTrue(violations.isEmpty(), VALIDATION_ERROR);
@@ -62,6 +64,7 @@ class FilmControllerTest {
     void nameNotEmpty() {
         final Film film = Film.builder()
                 .name("").description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .mpa(new Mpa(1, null, null))
                 .build();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), VALIDATION_ERROR);
@@ -72,6 +75,7 @@ class FilmControllerTest {
     void descriptionSizeLessThan200symbols() {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(WRONG_DESCRIPTION).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .mpa(new Mpa(1, null, null))
                 .build();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), VALIDATION_ERROR);
@@ -83,6 +87,7 @@ class FilmControllerTest {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION)
                 .releaseDate(LocalDate.of(1795, 12, 28))
+                .mpa(new Mpa(1, null, null))
                 .build();
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
@@ -100,6 +105,7 @@ class FilmControllerTest {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION)
                 .releaseDate(null)
+                .mpa(new Mpa(1, null, null))
                 .build();
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
@@ -116,6 +122,7 @@ class FilmControllerTest {
     void durationIsPositive() {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(-5).releaseDate(FILM_RELEASE)
+                .mpa(new Mpa(1, null, null))
                 .build();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), VALIDATION_ERROR);
@@ -126,6 +133,7 @@ class FilmControllerTest {
     void getById() {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .mpa(new Mpa(1, null, null))
                 .build();
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
@@ -139,6 +147,7 @@ class FilmControllerTest {
     void setLike() {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .mpa(new Mpa(1, null, null))
                 .build();
         final User user = User.builder()
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
@@ -160,6 +169,7 @@ class FilmControllerTest {
     void removeLike() {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .mpa(new Mpa(1, null, null))
                 .build();
         final User user = User.builder()
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
@@ -182,9 +192,11 @@ class FilmControllerTest {
     void getPopular() {
         final Film filmOne = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .mpa(new Mpa(1, null, null))
                 .build();
         final Film filmTwo = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
+                .mpa(new Mpa(1, null, null))
                 .build();
         final User user = User.builder()
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)

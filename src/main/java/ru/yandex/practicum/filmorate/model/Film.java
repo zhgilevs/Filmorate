@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,14 +11,17 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 @Builder
 public class Film {
 
     private int id;
-    private int rate;
     @JsonIgnore
     private final Set<Integer> likes = new HashSet<>();
+    private final Set<Genre> genres = new HashSet<>();
     @NotBlank
     @Size(min = 1, max = 200, message = "Описание должно быть не более 200 символов и не менее 1 символа")
     private String description;
@@ -29,5 +31,13 @@ public class Film {
     @NotBlank
     private String name;
     private LocalDate releaseDate;
+    private Mpa mpa;
 
+    public void setLikes(Set<Integer> set) {
+        likes.addAll(set);
+    }
+
+    public void setGenres(Set<Genre> set) {
+        genres.addAll(set);
+    }
 }
