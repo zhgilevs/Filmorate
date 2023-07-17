@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -22,14 +22,10 @@ import java.util.Objects;
 
 @Component("DbUserStorage")
 @Primary
+@RequiredArgsConstructor
 public class DbUserStorage implements UserStorage {
 
     private final JdbcOperations jdbcTemplate;
-
-    @Autowired
-    public DbUserStorage(JdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<User> getAll() {
@@ -88,38 +84,22 @@ public class DbUserStorage implements UserStorage {
 
     @Override
     public User addToFriends(int userId, int friendId) {
-        int status = 0;
+        boolean isFriendExists = false;
         String sqlQuery = "SELECT * FROM FRIENDS WHERE USER_ID=? AND FRIEND_ID=?";
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(sqlQuery, friendId, userId);
         if (userRows.next()) {
-            int qStatus = userRows.getInt("STATUS");
-            int uId = userRows.getInt("USER_ID");
-            int fId = userRows.getInt("FRIEND_ID");
-            if (qStatus == 0) {
-                qStatus = 1;
-                sqlQuery = "UPDATE FRIENDS SET STATUS=? WHERE USER_ID=? AND FRIEND_ID=?";
-                jdbcTemplate.update(sqlQuery, qStatus, uId, fId);
-            }
-            status = 1;
+            isFriendExists = true;
         }
-        sqlQuery = "INSERT INTO FRIENDS (USER_ID, FRIEND_ID, STATUS) values (?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, userId, friendId, status);
+        if (!isFriendExists) {
+            sqlQuery = "INSERT INTO FRIENDS (USER_ID, FRIEND_ID) values (?, ?)";
+            jdbcTemplate.update(sqlQuery, userId, friendId);
+        }
         return getById(userId);
     }
 
     @Override
     public User removeFromFriends(int userId, int friendId) {
-        int status = 0;
-        String sqlQuery = "SELECT STATUS FROM FRIENDS WHERE USER_ID=? AND FRIEND_ID=?";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
-        if (userRows.next()) {
-            status = userRows.getInt("STATUS");
-        }
-        if (status == 1) {
-            sqlQuery = "UPDATE FRIENDS SET STATUS=? WHERE USER_ID=? AND FRIEND_ID=?";
-            jdbcTemplate.update(sqlQuery, 0, friendId, userId);
-        }
-        sqlQuery = "DELETE FROM FRIENDS WHERE USER_ID=? AND FRIEND_ID=?";
+        String sqlQuery = "DELETE FROM FRIENDS WHERE USER_ID=? AND FRIEND_ID=?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
         return getById(userId);
     }

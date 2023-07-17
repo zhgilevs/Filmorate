@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.experimental.UtilityClass;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
-public abstract class StorageUtils {
-
-    private StorageUtils() {
-    }
+@UtilityClass
+public class StorageUtils {
 
     public static Mpa makeMpa(JdbcOperations jdbcTemplate, int id) {
         String query = "SELECT * FROM MPAS WHERE MPA_ID=?;";

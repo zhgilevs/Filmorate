@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DbUserStorageTest {
 
     private final UserStorage storage;
+    private static int k = 0;
 
     @Test
     @DisplayName("Создание пользователя")
@@ -31,8 +32,8 @@ public class DbUserStorageTest {
         assertNotNull(user);
         assertEquals(1, user.getId());
         assertEquals("Steve Wozniak", user.getName());
-        assertEquals("woz", user.getLogin());
-        assertEquals("thesmartwozniak@gmail.com", user.getEmail());
+        assertEquals(k + "woz", user.getLogin());
+        assertEquals("thesmartwozniak" + k + "@gmail.com", user.getEmail());
         assertEquals(LocalDate.of(1950, 8, 11), user.getBirthday());
     }
 
@@ -41,9 +42,9 @@ public class DbUserStorageTest {
     void updateTest() {
         storage.create(makeUser());
         User user = storage.getById(1);
-        user.setLogin("SteveWoz");
+        user.setName("Steve Wozniak Jr");
         User updatedUser = storage.update(user);
-        assertEquals("SteveWoz", updatedUser.getLogin());
+        assertEquals("Steve Wozniak Jr", updatedUser.getName());
     }
 
     @Test
@@ -119,10 +120,11 @@ public class DbUserStorageTest {
     }
 
     private User makeUser() {
+        k++;
         return User.builder()
                 .name("Steve Wozniak")
-                .email("thesmartwozniak@gmail.com")
-                .login("woz")
+                .email("thesmartwozniak" + k + "@gmail.com")
+                .login(k + "woz")
                 .birthday(LocalDate.of(1950, 8, 11))
                 .build();
     }
