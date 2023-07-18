@@ -41,4 +41,11 @@ public class BaseExceptionHandler {
         log.warn(ERROR + e.getMessage());
         return new ErrorResponse(ERROR_400, e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleDatabaseException(final DatabaseException e) {
+        log.warn(ERROR, e);
+        return new ErrorResponse(ERROR, e.getMessage());
+    }
 }

@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -15,7 +18,8 @@ public class UserService {
     private final UserStorage storage;
 
     @Autowired
-    public UserService(UserStorage storage) {
+    public UserService(
+            @Qualifier("DbUserStorage") UserStorage storage) {
         this.storage = storage;
     }
 
@@ -70,10 +74,21 @@ public class UserService {
     }
 
     public User create(User user) {
+        validate(user);
         return storage.create(user);
     }
 
     public User update(User user) {
+        validate(user);
         return storage.update(user);
+    }
+
+    private void validate(User user) {
+        if (user.getBirthday() == null) {
+            throw new ValidationException("Дата рождения должна быть передана в запросе");
+        }
+        if (StringUtils.isBlank(user.getName())) {
+            user.setName(user.getLogin());
+        }
     }
 }
