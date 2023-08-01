@@ -234,7 +234,7 @@ public class DbFilmStorage implements FilmStorage {
 
     public Film deleteFilmById(int id) {
         Film film = getById(id);
-        String sql = "DELETE FROM films WHERE id = ?";
+        String sql = "DELETE FROM films WHERE id=?";
         jdbcTemplate.update(sql, id);
         return film;
     }
