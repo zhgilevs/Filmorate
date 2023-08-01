@@ -91,4 +91,8 @@ public class FilmService {
             throw new ValidationException("Дата релиза должна быть позже 1895-12-28");
         }
     }
+
+    public Film deleteFilmById(int id) {
+        return filmStorage.deleteFilmById(id);
+    }
 }

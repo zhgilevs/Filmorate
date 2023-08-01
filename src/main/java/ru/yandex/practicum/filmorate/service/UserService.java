@@ -91,4 +91,8 @@ public class UserService {
             user.setName(user.getLogin());
         }
     }
+
+    public User deleteUserById(int id) {
+        return storage.deleteUserById(id);
+    }
 }
