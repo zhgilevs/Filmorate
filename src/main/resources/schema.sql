@@ -66,3 +66,13 @@ create table if not exists DIRECTORS
     constraint "DIRECTORS_pk"
         primary key (DIRECTOR_ID)
 );
+
+create table if not exists FILMS_AND_DIRECTORS
+(
+    FILM_ID     INTEGER not null,
+    DIRECTOR_ID INTEGER not null,
+    constraint "FILMS_AND_DIRECTORS_DIRECTORS_DIRECTOR_ID_fk"
+        foreign key (DIRECTOR_ID) references DIRECTORS,
+    constraint "FILMS_AND_DIRECTORS_FILMS_ID_fk"
+        foreign key (FILM_ID) references FILMS
+);
