@@ -1,16 +1,15 @@
 package ru.yandex.practicum.filmorate.model.director;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 /**
  * Класс описывает модель режиссера.
  */
 @Data
-@AllArgsConstructor
 public class Director {
     /**
      * Целочисленный идентификатор режиссера.

@@ -42,12 +42,12 @@ public class DirectorsController {
         return directorService.update(director);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @Validated({Marker.OnUpdate.class})
     @ResponseStatus(HttpStatus.OK)
-    Director delete(@RequestBody @Valid Director director) {
-        log.info("DELETE /directors: " + director);
-        return directorService.delete(director);
+    Director delete(@PathVariable int id) {
+        log.info("DELETE /directors/" + id);
+        return directorService.delete(id);
     }
 
     @GetMapping
@@ -57,9 +57,9 @@ public class DirectorsController {
         return directorService.getAll();
     }
 
-    @GetMapping("/directors/{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Director getDirectorById(@PathVariable int id) {
+    Director getDirectorById(@PathVariable int id) {
         log.info("GET /directors/" + id);
         return directorService.getById(id);
     }

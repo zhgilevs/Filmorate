@@ -10,7 +10,6 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -37,8 +36,7 @@ public class Film {
     /**
      * Режиссеры фильма.
      */
-    private Set<Director> director;
-
+    private Set<Director> directors;
     public void setLikes(Set<Integer> set) {
         likes.addAll(set);
     }

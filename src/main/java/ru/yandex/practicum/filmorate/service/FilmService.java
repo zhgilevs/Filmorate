@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -13,24 +13,23 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
     private static final LocalDate CINEMA_STARTING_POINT = LocalDate.of(1895, 12, 28);
     private static final String FILM_NOT_FOUND = "Фильм с ID: '%s' не найден";
     private static final String USER_NOT_FOUND = "Пользователь с ID: '%s' не найден";
+    @Qualifier("DbFilmStorage")
     private final FilmStorage filmStorage;
+    @Qualifier("DbUserStorage")
     private final UserStorage userStorage;
-
-    @Autowired
-    public FilmService(@Qualifier("DbFilmStorage") FilmStorage filmStorage,
-                       @Qualifier("DbUserStorage") UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-    }
+    private final DirectorService directorService;
 
     public Film getById(int id) {
         if (filmStorage.isExists(id)) {
-            return filmStorage.getById(id);
+            Film film = filmStorage.getById(id);
+            directorService.handleDirectorsWhenGetFilm(film);
+            return film;
         } else {
             throw new NotFoundException(String.format(FILM_NOT_FOUND, id));
         }
@@ -65,19 +64,25 @@ public class FilmService {
     }
 
     public List<Film> getAll() {
-        return filmStorage.getAll();
+        List<Film> films = filmStorage.getAll();
+        directorService.handleDirectorsWhenGetAllFilms(films);
+        return films;
     }
 
     public Film create(Film film) {
         validateReleaseDate(film);
-        return filmStorage.create(film);
+        filmStorage.create(film);
+        directorService.handleDirectorsWhenCreateAndUpdateFilm(film);
+        return film;
     }
 
     public Film update(Film film) {
         validateReleaseDate(film);
         int id = film.getId();
         if (filmStorage.isExists(id)) {
-            return filmStorage.update(film);
+            filmStorage.update(film);
+            directorService.handleDirectorsWhenCreateAndUpdateFilm(film);
+            return film;
         } else {
             throw new NotFoundException(String.format(FILM_NOT_FOUND, id));
         }
