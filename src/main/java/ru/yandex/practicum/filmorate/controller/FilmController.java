@@ -53,4 +53,9 @@ public class FilmController {
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", value = "count") int count) {
         return service.getPopular(count);
     }
+
+    @DeleteMapping("/{filmId}")
+    Film deleteFilmById(@PathVariable int filmId) {
+        return service.deleteFilmById(filmId);
+    }
 }

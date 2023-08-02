@@ -167,4 +167,11 @@ public class DbUserStorage implements UserStorage {
             throw new DatabaseException("Ошибка получения друга из база");
         }
     }
+
+    public User deleteUserById(int id) {
+        User user = getById(id);
+        String sql = "DELETE FROM users WHERE id = ?";
+        jdbcTemplate.update(sql, user.getId());
+        return user;
+    }
 }

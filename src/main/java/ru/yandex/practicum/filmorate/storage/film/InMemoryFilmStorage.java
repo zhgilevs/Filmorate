@@ -93,4 +93,9 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException("Дата релиза должна быть позже 1895-12-28");
         }
     }
+
+    @Override
+    public Film deleteFilmById(int id) {
+        return getById(id);
+    }
 }

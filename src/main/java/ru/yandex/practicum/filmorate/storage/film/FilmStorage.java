@@ -20,4 +20,6 @@ public interface FilmStorage {
     Film removeLike(int id, int userId);
 
     boolean isExists(int id);
+
+    Film deleteFilmById(int id);
 }

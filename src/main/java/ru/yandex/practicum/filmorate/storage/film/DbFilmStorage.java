@@ -231,4 +231,11 @@ public class DbFilmStorage implements FilmStorage {
             throw new DatabaseException("Ошибка получения пользователя");
         }
     }
+
+    public Film deleteFilmById(int id) {
+        Film film = getById(id);
+        String sql = "DELETE FROM films WHERE id=?";
+        jdbcTemplate.update(sql, id);
+        return film;
+    }
 }

@@ -91,4 +91,12 @@ public class UserService {
             user.setName(user.getLogin());
         }
     }
+
+    public User deleteUserById(int id) {
+        if (storage.isExists(id)) {
+            return storage.deleteUserById(id);
+        } else {
+            throw new NotFoundException(String.format(USER_NOT_FOUND, id));
+        }
+    }
 }
