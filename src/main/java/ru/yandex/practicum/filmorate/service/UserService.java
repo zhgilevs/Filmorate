@@ -93,6 +93,10 @@ public class UserService {
     }
 
     public User deleteUserById(int id) {
-        return storage.deleteUserById(id);
+        if (storage.isExists(id)) {
+            return storage.deleteUserById(id);
+        } else {
+            throw new NotFoundException(String.format(USER_NOT_FOUND, id));
+        }
     }
 }

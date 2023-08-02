@@ -93,6 +93,10 @@ public class FilmService {
     }
 
     public Film deleteFilmById(int id) {
-        return filmStorage.deleteFilmById(id);
+        if (filmStorage.isExists(id)) {
+            return filmStorage.deleteFilmById(id);
+        } else {
+            throw new NotFoundException(String.format(FILM_NOT_FOUND, id));
+        }
     }
 }
