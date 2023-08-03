@@ -166,7 +166,7 @@ public class DbFilmStorage implements FilmStorage {
                     "WHERE UPPER(directors.name) LIKE UPPER('%" + query + "%') ";
         }
         sqlQuery += "GROUP BY films.id " +
-                "ORDER BY COUNT(likes.user_id)";
+                "ORDER BY COUNT(likes.user_id) DESC";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
     }
@@ -247,8 +247,8 @@ public class DbFilmStorage implements FilmStorage {
 
     private Set<Director> getDirectorsByFilmId(int filmId) {
         String sqlQuery = "SELECT director_id, name FROM directors " +
-                "WHERE director_id IN (SELECT director_id FROM films_and_directors WHERE film_id=?";
-        return new HashSet<>(jdbcOperations.query(sqlQuery, StorageUtils::directorMapRow));
+                "WHERE director_id IN (SELECT director_id FROM films_and_directors WHERE film_id=?)";
+        return new HashSet<>(jdbcTemplate.query(sqlQuery, StorageUtils::directorMapRow, filmId));
     }
 
     private User makeUser(ResultSet rs) {
