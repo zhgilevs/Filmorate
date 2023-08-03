@@ -84,7 +84,7 @@ public class UserService {
         return storage.update(user);
     }
 
-    public List<Film> getRecommendedFilmForUser(int targetUserId){
+    public List<Film> getRecommendedFilmForUser(int targetUserId) {
         return storage.getRecommendedFilmForUser(targetUserId);
     }
 
