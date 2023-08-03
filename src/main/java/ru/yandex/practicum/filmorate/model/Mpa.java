@@ -10,9 +10,12 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @EqualsAndHashCode
 public class Mpa {
-    private final int id;
+    private int id;
     @NotBlank
-    private final String name;
+    private String name;
     @NotBlank
-    private final String description;
+    private String description;
+
+    public Mpa() {
+    }
 }
