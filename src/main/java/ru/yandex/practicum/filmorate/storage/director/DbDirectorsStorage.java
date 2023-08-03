@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.director;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -11,9 +10,8 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.director.Director;
+import ru.yandex.practicum.filmorate.storage.StorageUtils;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -72,7 +70,7 @@ public class DbDirectorsStorage implements DirectorsStorage {
         final String sqlQuery = "select * " +
                 "from DIRECTORS";
 
-        return jdbcOperations.query(sqlQuery, new DirectorRowMapper());
+        return jdbcOperations.query(sqlQuery, StorageUtils::directorMapRow);
     }
 
     @Override
@@ -80,7 +78,7 @@ public class DbDirectorsStorage implements DirectorsStorage {
         final String sqlQuery = "select * " +
                 "from DIRECTORS " +
                 "where DIRECTOR_ID = :id";
-        final List<Director> directors = jdbcOperations.query(sqlQuery, Map.of("id", id), new DirectorRowMapper());
+        final List<Director> directors = jdbcOperations.query(sqlQuery, Map.of("id", id), StorageUtils::directorMapRow);
         return directors.size() == 0 ? Optional.empty() : Optional.of(directors.get(0));
     }
 
@@ -117,8 +115,7 @@ public class DbDirectorsStorage implements DirectorsStorage {
                 "from FILMS_AND_DIRECTORS " +
                 "left join DIRECTORS on FILMS_AND_DIRECTORS.DIRECTOR_ID = DIRECTORS.DIRECTOR_ID " +
                 "where FILM_ID = :filmId";
-
-        return jdbcOperations.query(sqlQuery, Map.of("filmId", film.getId()), new DirectorRowMapper());
+        return jdbcOperations.query(sqlQuery, Map.of("filmId", film.getId()), StorageUtils::directorMapRow);
     }
 
     @Override
@@ -141,16 +138,5 @@ public class DbDirectorsStorage implements DirectorsStorage {
             filmsAndDirectors.get(filmId).add(director);
         }
         return filmsAndDirectors;
-    }
-
-    private final static class DirectorRowMapper implements RowMapper<Director> {
-        @Override
-        public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Director director = new Director();
-
-            director.setId(rs.getInt("DIRECTOR_ID"));
-            director.setName(rs.getString("NAME"));
-            return director;
-        }
     }
 }
