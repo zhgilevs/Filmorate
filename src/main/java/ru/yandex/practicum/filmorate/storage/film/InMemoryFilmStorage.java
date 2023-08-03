@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.director.Director;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -83,6 +85,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public boolean isExists(int id) {
         return films.containsKey(id);
+    }
+
+    @Override
+    public List<Film> getFilmsByDirector(Director director) {
+        throw new NotImplementedException();
     }
 
     private void validateReleaseDate(Film film) {

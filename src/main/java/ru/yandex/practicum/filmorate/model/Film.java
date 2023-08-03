@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import ru.yandex.practicum.filmorate.model.director.Director;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -32,6 +33,10 @@ public class Film {
     private String name;
     private LocalDate releaseDate;
     private Mpa mpa;
+    /**
+     * Режиссеры фильма.
+     */
+    private Set<Director> directors;
 
     public void setLikes(Set<Integer> set) {
         likes.addAll(set);

@@ -1,36 +1,38 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.director.Director;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
     private static final LocalDate CINEMA_STARTING_POINT = LocalDate.of(1895, 12, 28);
     private static final String FILM_NOT_FOUND = "Фильм с ID: '%s' не найден";
     private static final String USER_NOT_FOUND = "Пользователь с ID: '%s' не найден";
+    @Qualifier("DbFilmStorage")
     private final FilmStorage filmStorage;
+    @Qualifier("DbUserStorage")
     private final UserStorage userStorage;
-
-    @Autowired
-    public FilmService(@Qualifier("DbFilmStorage") FilmStorage filmStorage,
-                       @Qualifier("DbUserStorage") UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-    }
+    private final DirectorService directorService;
 
     public Film getById(int id) {
         if (filmStorage.isExists(id)) {
-            return filmStorage.getById(id);
+            Film film = filmStorage.getById(id);
+            directorService.handleDirectorsWhenGetFilm(film);
+            return film;
         } else {
             throw new NotFoundException(String.format(FILM_NOT_FOUND, id));
         }
@@ -60,24 +62,32 @@ public class FilmService {
         if (filmStorage.getAll().isEmpty()) {
             throw new NotFoundException("Список фильмов пуст");
         } else {
-            return filmStorage.getPopular(count);
+            List<Film> films = filmStorage.getPopular(count);
+            directorService.handleDirectorsWhenGetListFilms(films);
+            return films;
         }
     }
 
     public List<Film> getAll() {
-        return filmStorage.getAll();
+        List<Film> films = filmStorage.getAll();
+        directorService.handleDirectorsWhenGetListFilms(films);
+        return films;
     }
 
     public Film create(Film film) {
         validateReleaseDate(film);
-        return filmStorage.create(film);
+        filmStorage.create(film);
+        directorService.handleDirectorsWhenCreateAndUpdateFilm(film);
+        return film;
     }
 
     public Film update(Film film) {
         validateReleaseDate(film);
         int id = film.getId();
         if (filmStorage.isExists(id)) {
-            return filmStorage.update(film);
+            filmStorage.update(film);
+            directorService.handleDirectorsWhenCreateAndUpdateFilm(film);
+            return getById(film.getId());
         } else {
             throw new NotFoundException(String.format(FILM_NOT_FOUND, id));
         }
@@ -98,5 +108,36 @@ public class FilmService {
         } else {
             throw new NotFoundException(String.format(FILM_NOT_FOUND, id));
         }
+    }
+
+    public List<Film> getFilmsByDirector(int directorId, String sort) {
+        Director director = directorService.getById(directorId);
+        List<Film> directorFilms = filmStorage.getFilmsByDirector(director);
+        directorService.handleDirectorsWhenGetListFilms(directorFilms);
+        switch (sort) {
+            case "year": {
+                directorFilms = directorFilms.stream()
+                        .sorted(new Comparator<Film>() {
+                            @Override
+                            public int compare(Film o1, Film o2) {
+                                return o1.getReleaseDate().getYear() - o2.getReleaseDate().getYear();
+                            }
+                        })
+                        .collect(Collectors.toList());
+                break;
+            }
+            default: {
+                directorFilms = directorFilms.stream()
+                        .sorted(new Comparator<Film>() {
+                            @Override
+                            public int compare(Film o1, Film o2) {
+                                return o1.getLikes().size() - o2.getLikes().size();
+                            }
+                        })
+                        .collect(Collectors.toList());
+            }
+        }
+        System.out.println(directorFilms);
+        return directorFilms;
     }
 }
