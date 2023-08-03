@@ -23,12 +23,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @Disabled
 class UserControllerTest {
 
-    private Validator validator;
     private static final String USER_NAME = "Nick Name";
     private static final String USER_EMAIL = "mail@mail.ru";
     private static final String USER_LOGIN = "dolore";
     private static final LocalDate USER_BIRTHDAY = LocalDate.of(1946, 8, 20);
     private static final String VALIDATION_ERROR = "Ошибка валидации";
+    private Validator validator;
 
     @BeforeEach
     void init() {

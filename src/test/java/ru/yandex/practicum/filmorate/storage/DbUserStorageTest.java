@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Disabled
 public class DbUserStorageTest {
 
-    private final UserStorage storage;
     private static int k = 0;
+    private final UserStorage storage;
 
     @Test
     @DisplayName("Создание пользователя")

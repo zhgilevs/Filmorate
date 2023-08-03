@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Disabled
 class FilmControllerTest {
 
-    private Validator validator;
     private static final String FILM_NAME = "nisi eiusmod";
     private static final String FILM_DESC = "adipisicing";
     private static final LocalDate FILM_RELEASE = LocalDate.of(1967, 3, 25);
@@ -44,6 +43,7 @@ class FilmControllerTest {
                     + "который задолжал им деньги, а именно 20 миллионов. о Круглов, который за время «своего отсутствия»"
                     + " стал кандидатом в президенты Колумбии.";
     private static final String VALIDATION_ERROR = "Ошибка валидации";
+    private Validator validator;
 
     @BeforeEach
     void init() {
