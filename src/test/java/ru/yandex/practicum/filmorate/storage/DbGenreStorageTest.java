@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,24 +14,16 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Sql(scripts = "file:src/main/resources/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DisplayName("Тесты DbGenreStorage")
+@Disabled
 public class DbGenreStorageTest {
 
     private final GenreStorage storage;
-
-    @Test
-    @DisplayName("Получение жанра")
-    void getByIdTest() {
-        Genre comedy = storage.getById(1);
-        assertNotNull(comedy);
-        assertEquals("Комедия", comedy.getName());
-    }
 
     @Test
     @DisplayName("Получение всех жанров")

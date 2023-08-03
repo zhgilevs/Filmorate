@@ -7,7 +7,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.director.Director;
 import ru.yandex.practicum.filmorate.storage.director.DirectorsStorage;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +59,7 @@ public class DirectorService {
         film.setDirectors(new HashSet<>(directors));
     }
 
-    public void handleDirectorsWhenGetAllFilms(List<Film> films) {
+    public void handleDirectorsWhenGetListFilms(List<Film> films) {
         Map<Integer, Set<Director>> filmsAndDirectors = directorsStorage.getDirectorsForFilms(films);
         films.stream()
                 .peek(film -> film.setDirectors(filmsAndDirectors.get(film.getId())))
@@ -77,12 +80,12 @@ public class DirectorService {
          * Значение - имя известного режиссера, соответствующего id
          */
         Map<Integer, String> allDirectors = getAll().stream()
-                .collect(Collectors.toMap(director -> director.getId(), director -> director.getName()));
+                .collect(Collectors.toMap(Director::getId, Director::getName));
         /*
            Список id режиссеров у пришедшего фильма
          */
         List<Integer> filmDirectorsIds = film.getDirectors().stream()
-                .map(director -> director.getId())
+                .map(Director::getId)
                 .collect(Collectors.toList());
         /*
            Множество, которое будет установлено в поле к фильму
@@ -90,7 +93,7 @@ public class DirectorService {
         HashSet<Director> directors = new HashSet<>();
 
         for (Integer directorId : filmDirectorsIds) {
-            if (!allDirectors.keySet().contains(directorId))
+            if (!allDirectors.containsKey(directorId))
                 throw new NotFoundException("Не добавлен режиссер с id = " + directorId);
 
             Director director = new Director();
