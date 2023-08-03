@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -12,16 +13,14 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.director.Director;
 import ru.yandex.practicum.filmorate.storage.StorageUtils;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Component("DbFilmStorage")
 @Primary
@@ -29,6 +28,7 @@ import java.util.Set;
 public class DbFilmStorage implements FilmStorage {
 
     private final JdbcOperations jdbcTemplate;
+    private final NamedParameterJdbcOperations jdbcOperations;
 
     @Override
     public List<Film> getAll() {
@@ -146,6 +146,21 @@ public class DbFilmStorage implements FilmStorage {
             return idFromFilms == id;
         }
         return false;
+    }
+
+    @Override
+    public List<Film> getFilmsByDirector(Director director) {
+        String query = "select * " +
+                "from FILMS " +
+                "right join FILMS_AND_DIRECTORS FAD on FILMS.ID = FAD.FILM_ID " +
+                "where FAD.DIRECTOR_ID = :directorId";
+        List<Film> films = jdbcOperations.query(query, Map.of("directorId", director.getId()), (rs, rowNum) -> makeFilm(rs));
+
+        for (Film film : films) {
+            film.setGenres(getGenresById(film.getId()));
+            film.setLikes(getLikesById(film.getId()));
+        }
+        return films;
     }
 
     private Mpa getMpaById(int id) {

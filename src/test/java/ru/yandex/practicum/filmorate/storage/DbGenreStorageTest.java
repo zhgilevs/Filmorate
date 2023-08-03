@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -23,14 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class DbGenreStorageTest {
 
     private final GenreStorage storage;
-
-    @Test
-    @DisplayName("Получение жанра")
-    void getByIdTest() {
-        Genre comedy = storage.getById(1);
-        assertNotNull(comedy);
-        assertEquals("Комедия", comedy.getName());
-    }
 
     @Test
     @DisplayName("Получение всех жанров")

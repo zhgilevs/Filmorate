@@ -37,6 +37,7 @@ public class Film {
      * Режиссеры фильма.
      */
     private Set<Director> directors;
+
     public void setLikes(Set<Integer> set) {
         likes.addAll(set);
     }

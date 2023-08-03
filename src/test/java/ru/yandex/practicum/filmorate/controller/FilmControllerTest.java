@@ -19,6 +19,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,6 +55,7 @@ class FilmControllerTest {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
                 .mpa(new Mpa(1, null, null))
+                .directors(new HashSet<>())
                 .build();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertTrue(violations.isEmpty(), VALIDATION_ERROR);
@@ -65,6 +67,7 @@ class FilmControllerTest {
         final Film film = Film.builder()
                 .name("").description(FILM_DESC).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
                 .mpa(new Mpa(1, null, null))
+                .directors(new HashSet<>())
                 .build();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), VALIDATION_ERROR);
@@ -76,6 +79,7 @@ class FilmControllerTest {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(WRONG_DESCRIPTION).duration(FILM_DURATION).releaseDate(FILM_RELEASE)
                 .mpa(new Mpa(1, null, null))
+                .directors(new HashSet<>())
                 .build();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), VALIDATION_ERROR);
@@ -91,7 +95,7 @@ class FilmControllerTest {
                 .build();
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
-        FilmService service = new FilmService(filmStorage, userStorage);
+        FilmService service = new FilmService(filmStorage, userStorage, null);
         FilmController fc = new FilmController(service);
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> fc.create(film));
@@ -109,7 +113,7 @@ class FilmControllerTest {
                 .build();
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
-        FilmService service = new FilmService(filmStorage, userStorage);
+        FilmService service = new FilmService(filmStorage, userStorage, null);
         FilmController fc = new FilmController(service);
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> fc.create(film));
@@ -123,6 +127,7 @@ class FilmControllerTest {
         final Film film = Film.builder()
                 .name(FILM_NAME).description(FILM_DESC).duration(-5).releaseDate(FILM_RELEASE)
                 .mpa(new Mpa(1, null, null))
+                .directors(new HashSet<>())
                 .build();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), VALIDATION_ERROR);
@@ -137,7 +142,7 @@ class FilmControllerTest {
                 .build();
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
-        FilmService service = new FilmService(filmStorage, userStorage);
+        FilmService service = new FilmService(filmStorage, userStorage, null);
         FilmController fc = new FilmController(service);
         assertEquals(1, fc.getById(fc.create(film).getId()).getId());
     }
@@ -154,7 +159,7 @@ class FilmControllerTest {
                 .build();
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
-        FilmService filmService = new FilmService(filmStorage, userStorage);
+        FilmService filmService = new FilmService(filmStorage, userStorage, null);
         UserService userService = new UserService(userStorage);
         FilmController fc = new FilmController(filmService);
         UserController uc = new UserController(userService);
@@ -176,7 +181,7 @@ class FilmControllerTest {
                 .build();
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
-        FilmService filmService = new FilmService(filmStorage, userStorage);
+        FilmService filmService = new FilmService(filmStorage, userStorage, null);
         UserService userService = new UserService(userStorage);
         FilmController fc = new FilmController(filmService);
         UserController uc = new UserController(userService);
@@ -203,7 +208,7 @@ class FilmControllerTest {
                 .build();
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
-        FilmService filmService = new FilmService(filmStorage, userStorage);
+        FilmService filmService = new FilmService(filmStorage, userStorage, null);
         UserService userService = new UserService(userStorage);
         FilmController fc = new FilmController(filmService);
         UserController uc = new UserController(userService);

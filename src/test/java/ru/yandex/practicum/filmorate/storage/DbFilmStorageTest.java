@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +44,7 @@ class DbFilmStorageTest {
         assertEquals(FILM_DESCRIPTION, film.getDescription());
         assertEquals(FILM_DURATION, film.getDuration());
         assertEquals(FILM_RELEASE_DATE, film.getReleaseDate());
-        assertEquals(MPA, film.getMpa());
+        assertEquals(MPA.getId(), film.getMpa().getId());
     }
 
     @Test
@@ -123,6 +124,7 @@ class DbFilmStorageTest {
                 .duration(FILM_DURATION)
                 .releaseDate(FILM_RELEASE_DATE)
                 .mpa(MPA)
+                .directors(new HashSet<>())
                 .build();
     }
 

@@ -6,11 +6,14 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.director.Director;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,13 +62,15 @@ public class FilmService {
         if (filmStorage.getAll().isEmpty()) {
             throw new NotFoundException("Список фильмов пуст");
         } else {
-            return filmStorage.getPopular(count);
+            List<Film> films = filmStorage.getPopular(count);
+            directorService.handleDirectorsWhenGetListFilms(films);
+            return films;
         }
     }
 
     public List<Film> getAll() {
         List<Film> films = filmStorage.getAll();
-        directorService.handleDirectorsWhenGetAllFilms(films);
+        directorService.handleDirectorsWhenGetListFilms(films);
         return films;
     }
 
@@ -82,7 +87,7 @@ public class FilmService {
         if (filmStorage.isExists(id)) {
             filmStorage.update(film);
             directorService.handleDirectorsWhenCreateAndUpdateFilm(film);
-            return film;
+            return getById(film.getId());
         } else {
             throw new NotFoundException(String.format(FILM_NOT_FOUND, id));
         }
@@ -103,5 +108,36 @@ public class FilmService {
         } else {
             throw new NotFoundException(String.format(FILM_NOT_FOUND, id));
         }
+    }
+
+    public List<Film> getFilmsByDirector(int directorId, String sort) {
+        Director director = directorService.getById(directorId);
+        List<Film> directorFilms = filmStorage.getFilmsByDirector(director);
+        directorService.handleDirectorsWhenGetListFilms(directorFilms);
+        switch (sort) {
+            case "year": {
+                directorFilms = directorFilms.stream()
+                        .sorted(new Comparator<Film>() {
+                            @Override
+                            public int compare(Film o1, Film o2) {
+                                return o1.getReleaseDate().getYear() - o2.getReleaseDate().getYear();
+                            }
+                        })
+                        .collect(Collectors.toList());
+                break;
+            }
+            default: {
+                directorFilms = directorFilms.stream()
+                        .sorted(new Comparator<Film>() {
+                            @Override
+                            public int compare(Film o1, Film o2) {
+                                return o1.getLikes().size() - o2.getLikes().size();
+                            }
+                        })
+                        .collect(Collectors.toList());
+            }
+        }
+        System.out.println(directorFilms);
+        return directorFilms;
     }
 }
