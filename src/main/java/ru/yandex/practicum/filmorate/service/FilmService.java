@@ -140,4 +140,15 @@ public class FilmService {
         System.out.println(directorFilms);
         return directorFilms;
     }
+
+    public List<Film> searchFilms(String query, List<String> by) {
+        boolean searchByTitle = by.contains("title");
+        boolean searchByDirector = by.contains("director");
+
+        if (by.isEmpty() || by.size() > 2 || (!searchByTitle && !searchByDirector)) {
+            throw new ValidationException("Неправельный запрос области поиска");
+        }
+
+        return filmStorage.searchFilms(searchByTitle, searchByDirector, query);
+    }
 }

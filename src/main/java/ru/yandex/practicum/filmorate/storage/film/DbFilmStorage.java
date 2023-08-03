@@ -33,12 +33,8 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public List<Film> getAll() {
         String query = "SELECT * FROM FILMS;";
-        List<Film> films = jdbcTemplate.query(query, (rs, rowNum) -> makeFilm(rs));
-        for (Film film : films) {
-            film.setGenres(getGenresById(film.getId()));
-            film.setLikes(getLikesById(film.getId()));
-        }
-        return films;
+
+        return jdbcTemplate.query(query, (rs, rowNum) -> makeFilm(rs));
     }
 
     @Override
@@ -107,12 +103,7 @@ public class DbFilmStorage implements FilmStorage {
                         "GROUP BY F.ID " +
                         "ORDER BY COUNT(L.USER_ID) DESC " +
                         "LIMIT ?;";
-        List<Film> films = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
-        for (Film film : films) {
-            film.setGenres(getGenresById(film.getId()));
-            film.setLikes(getLikesById(film.getId()));
-        }
-        return films;
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
     }
 
     @Override
@@ -154,13 +145,30 @@ public class DbFilmStorage implements FilmStorage {
                 "from FILMS " +
                 "right join FILMS_AND_DIRECTORS FAD on FILMS.ID = FAD.FILM_ID " +
                 "where FAD.DIRECTOR_ID = :directorId";
-        List<Film> films = jdbcOperations.query(query, Map.of("directorId", director.getId()), (rs, rowNum) -> makeFilm(rs));
 
-        for (Film film : films) {
-            film.setGenres(getGenresById(film.getId()));
-            film.setLikes(getLikesById(film.getId()));
+        return jdbcOperations.query(query, Map.of("directorId", director.getId()), (rs, rowNum) -> makeFilm(rs));
+    }
+
+    @Override
+    public List<Film> searchFilms(boolean searchByTitle, boolean searchByDirector, String query) {
+        String sqlQuery = "SELECT * FROM films " +
+                "LEFT JOIN likes ON films.id=likes.film_id ";
+        if (searchByTitle && searchByDirector) {
+            sqlQuery += "LEFT JOIN films_and_directors ON films.id=films_and_directors.film_id " +
+                    "LEFT JOIN directors ON films_and_directors.director_id=directors.director_id " +
+                    "WHERE UPPER(films.name) LIKE UPPER('%" + query + "%') " +
+                    "OR UPPER(directors.name) LIKE UPPER('%" + query + "%') ";
+        } else if (searchByTitle) {
+            sqlQuery += "WHERE UPPER(films.name) LIKE UPPER('%" + query + "%') ";
+        } else if (searchByDirector) {
+            sqlQuery += "LEFT JOIN films_and_directors ON films.id=films_and_directors.film_id " +
+                    "LEFT JOIN directors ON films_and_directors.director_id=directors.director_id " +
+                    "WHERE UPPER(directors.name) LIKE UPPER('%" + query + "%') ";
         }
-        return films;
+        sqlQuery += "GROUP BY films.id " +
+                "ORDER BY COUNT(likes.user_id)";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
     }
 
     private Mpa getMpaById(int id) {
@@ -220,7 +228,7 @@ public class DbFilmStorage implements FilmStorage {
 
     private Film makeFilm(ResultSet rs) {
         try {
-            return Film.builder()
+            Film film = Film.builder()
                     .id(rs.getInt("ID"))
                     .name(rs.getString("NAME"))
                     .description(rs.getString("DESCRIPTION"))
@@ -228,9 +236,19 @@ public class DbFilmStorage implements FilmStorage {
                     .releaseDate(rs.getDate("RELEASE_DATE").toLocalDate())
                     .mpa(getMpaById(rs.getInt("MPA_ID")))
                     .build();
+            film.setGenres(getGenresById(film.getId()));
+            film.setLikes(getLikesById(film.getId()));
+            film.setDirectors(getDirectorsByFilmId(film.getId()));
+            return film;
         } catch (SQLException e) {
             throw new DatabaseException("Ошибка получения фильма");
         }
+    }
+
+    private Set<Director> getDirectorsByFilmId(int filmId) {
+        String sqlQuery = "SELECT director_id, name FROM directors " +
+                "WHERE director_id IN (SELECT director_id FROM films_and_directors WHERE film_id=?";
+        return new HashSet<>(jdbcOperations.query(sqlQuery, StorageUtils::directorMapRow));
     }
 
     private User makeUser(ResultSet rs) {

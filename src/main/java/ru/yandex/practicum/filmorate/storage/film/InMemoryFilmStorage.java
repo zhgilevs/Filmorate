@@ -105,4 +105,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film deleteFilmById(int id) {
         return getById(id);
     }
+
+    @Override
+    public List<Film> searchFilms(boolean searchByTitle, boolean searchByDirector, String query) {
+        return new ArrayList<>();
+    }
 }
