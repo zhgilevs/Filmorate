@@ -63,18 +63,11 @@ public class DbReviewStorage implements ReviewStorage {
     @Override
     public Review getById(int id) {
         String sqlQuery = "SELECT * FROM REVIEWS WHERE REVIEW_ID=?";
-        SqlRowSet reviewRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
-        if (reviewRows.next()) {
-            return Review.builder()
-                    .reviewId(reviewRows.getInt("REVIEW_ID"))
-                    .content(reviewRows.getString("CONTENT"))
-                    .isPositive(reviewRows.getBoolean("IS_POSITIVE"))
-                    .userId(reviewRows.getInt("USER_ID"))
-                    .filmId(reviewRows.getInt("FILM_ID"))
-                    .useful(reviewRows.getInt("USEFUL"))
-                    .build();
-        } else {
+        List<Review> reviews = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeReview(rs), id);
+        if (reviews.isEmpty()) {
             throw new NotFoundException("Отзыв с ID: '" + id + "' не найден");
+        } else {
+            return reviews.get(0);
         }
     }
 

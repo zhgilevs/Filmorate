@@ -20,23 +20,23 @@ public class ReviewService {
     private final FilmStorage filmStorage;
 
     public Review create(Review review) {
-        validateUser(review.getUserId());
-        validateFilm(review.getFilmId());
+        checkUser(review.getUserId());
+        checkFilm(review.getFilmId());
         return reviewStorage.create(review);
     }
 
     public Review update(Review review) {
-        validateReview(review.getReviewId());
+        checkReview(review.getReviewId());
         return reviewStorage.update(review);
     }
 
     public boolean remove(int id) {
-        validateReview(id);
+        checkReview(id);
         return reviewStorage.remove(id);
     }
 
     public Review getById(int id) {
-        validateReview(id);
+        checkReview(id);
         return reviewStorage.getById(id);
     }
 
@@ -46,51 +46,51 @@ public class ReviewService {
         if (filmId == 0) {
             return reviewStorage.get(count);
         } else {
-            validateFilm(filmId);
+            checkFilm(filmId);
             return reviewStorage.getByFilmId(filmId, count);
         }
     }
 
     public Review setLike(int id, int userId) {
-        validate(id, userId);
+        check(id, userId);
         return reviewStorage.setLike(id, userId);
     }
 
     public Review setDislike(int id, int userId) {
-        validate(id, userId);
+        check(id, userId);
         return reviewStorage.setDislike(id, userId);
     }
 
     public boolean removeLike(int id, int userId) {
-        validate(id, userId);
+        check(id, userId);
         return reviewStorage.removeLike(id, userId);
     }
 
     public boolean removeDislike(int id, int userId) {
-        validate(id, userId);
+        check(id, userId);
         return reviewStorage.removeDislike(id, userId);
     }
 
-    private void validateReview(int id) {
+    private void checkReview(int id) {
         if (!reviewStorage.isExists(id)) {
             throw new NotFoundException(String.format("Отзыв с ID: '%s' не найден", id));
         }
     }
 
-    private void validateUser(int userId) {
+    private void checkUser(int userId) {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("Пользователь с ID: '%s' не найден", userId));
         }
     }
 
-    private void validateFilm(int filmId) {
+    private void checkFilm(int filmId) {
         if (!filmStorage.isExists(filmId)) {
             throw new NotFoundException(String.format("Фильм с ID: '%s' не найден", filmId));
         }
     }
 
-    private void validate(int id, int userId) {
-        validateUser(userId);
-        validateReview(id);
+    private void check(int id, int userId) {
+        checkUser(userId);
+        checkReview(id);
     }
 }
