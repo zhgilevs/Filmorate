@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -16,11 +17,15 @@ public class UserService {
 
     private static final String USER_NOT_FOUND = "Пользователь с ID: '%s' не найден";
     private final UserStorage storage;
+    @Qualifier("DbEventStorage")
+    private final EventStorage eventStorage;
 
     @Autowired
     public UserService(
-            @Qualifier("DbUserStorage") UserStorage storage) {
+            @Qualifier("DbUserStorage") UserStorage storage,
+            @Qualifier("DbEventStorage") EventStorage eventStorage) {
         this.storage = storage;
+        this.eventStorage = eventStorage;
     }
 
     public User getById(int id) {
