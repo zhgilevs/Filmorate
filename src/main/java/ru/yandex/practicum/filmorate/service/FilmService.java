@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.director.Director;
 import ru.yandex.practicum.filmorate.storage.event.EventStorage;
@@ -47,7 +48,18 @@ public class FilmService {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format(USER_NOT_FOUND, userId));
         }
-        return filmStorage.addLike(id, userId);
+
+        Film filmInReturningCondition = filmStorage.addLike(id, userId);
+
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(id)
+                .eventType("LIKE")
+                .operation("ADD")
+                .build();
+        eventService.addEvent(event);
+
+        return filmInReturningCondition;
     }
 
     public Film removeLike(int id, int userId) {
@@ -57,7 +69,18 @@ public class FilmService {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format(USER_NOT_FOUND, userId));
         }
-        return filmStorage.removeLike(id, userId);
+
+        Film filmInReturningCondition = filmStorage.removeLike(id, userId);
+
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(id)
+                .eventType("LIKE")
+                .operation("REMOVE")
+                .build();
+        eventService.addEvent(event);
+
+        return filmInReturningCondition;
     }
 
     public List<Film> getPopular(int count) {
