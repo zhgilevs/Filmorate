@@ -171,7 +171,7 @@ class FilmControllerTest {
                 new EventService(new EventStorageForTests()), new DirectorService(new DirectorStorageForTests()));
         UserService userService = new UserService(userStorage, new EventService(new EventStorageForTests()));
         FilmController fc = new FilmController(filmService);
-        UserController uc = new UserController(userService);
+        UserController uc = new UserController(userService, new EventService(new EventStorageForTests()));
         fc.create(film);
         uc.create(user);
         fc.setLike(film.getId(), user.getId());
@@ -194,7 +194,7 @@ class FilmControllerTest {
                 new EventService(new EventStorageForTests()), new DirectorService(new DirectorStorageForTests()));
         UserService userService = new UserService(userStorage, new EventService(new EventStorageForTests()));
         FilmController fc = new FilmController(filmService);
-        UserController uc = new UserController(userService);
+        UserController uc = new UserController(userService, new EventService(new EventStorageForTests()));
         fc.create(film);
         uc.create(user);
         fc.setLike(film.getId(), user.getId());
@@ -222,7 +222,7 @@ class FilmControllerTest {
                 new EventService(new EventStorageForTests()), new DirectorService(new DirectorStorageForTests()));
         UserService userService = new UserService(userStorage, new EventService(new EventStorageForTests()));
         FilmController fc = new FilmController(filmService);
-        UserController uc = new UserController(userService);
+        UserController uc = new UserController(userService, new EventService(new EventStorageForTests()));
         fc.create(filmOne);
         fc.create(filmTwo);
         uc.create(user);

@@ -76,7 +76,7 @@ class UserControllerTest {
                 .build();
         UserStorage storage = new InMemoryUserStorage();
         UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service);
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
         User createdUser = uc.create(user);
         assertEquals(USER_LOGIN, createdUser.getName(), VALIDATION_ERROR);
     }
@@ -89,7 +89,7 @@ class UserControllerTest {
                 .build();
         UserStorage storage = new InMemoryUserStorage();
         UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service);
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
         User createdUser = uc.create(user);
         assertEquals(USER_LOGIN, createdUser.getName(), VALIDATION_ERROR);
     }
@@ -114,7 +114,7 @@ class UserControllerTest {
                 .build();
         UserStorage storage = new InMemoryUserStorage();
         UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service);
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> uc.create(user));
         assertEquals("Дата рождения должна быть передана в запросе", ex.getMessage(),
@@ -149,7 +149,7 @@ class UserControllerTest {
                 .build();
         UserStorage storage = new InMemoryUserStorage();
         UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service);
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
         uc.create(user);
         assertEquals(1, uc.getById(user.getId()).getId());
     }
@@ -165,7 +165,7 @@ class UserControllerTest {
                 .build();
         UserStorage storage = new InMemoryUserStorage();
         UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service);
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
         uc.create(user);
         uc.create(friend);
         uc.addToFriends(user.getId(), friend.getId());
@@ -184,7 +184,7 @@ class UserControllerTest {
                 .build();
         UserStorage storage = new InMemoryUserStorage();
         UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service);
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
         uc.create(user);
         uc.create(friend);
         uc.addToFriends(user.getId(), friend.getId());
@@ -204,7 +204,7 @@ class UserControllerTest {
                 .build();
         UserStorage storage = new InMemoryUserStorage();
         UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service);
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
         uc.create(user);
         uc.create(friend);
         uc.addToFriends(user.getId(), friend.getId());
@@ -226,7 +226,7 @@ class UserControllerTest {
                 .build();
         UserStorage storage = new InMemoryUserStorage();
         UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service);
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
         uc.create(userOne);
         uc.create(userTwo);
         uc.create(commonFriend);
