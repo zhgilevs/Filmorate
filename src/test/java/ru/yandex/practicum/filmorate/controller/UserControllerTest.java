@@ -6,7 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.event.EventStorageForTests;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -73,7 +75,7 @@ class UserControllerTest {
                 .name(null).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage);
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
         UserController uc = new UserController(service);
         User createdUser = uc.create(user);
         assertEquals(USER_LOGIN, createdUser.getName(), VALIDATION_ERROR);
@@ -86,7 +88,7 @@ class UserControllerTest {
                 .name("").email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage);
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
         UserController uc = new UserController(service);
         User createdUser = uc.create(user);
         assertEquals(USER_LOGIN, createdUser.getName(), VALIDATION_ERROR);
@@ -111,7 +113,7 @@ class UserControllerTest {
                 .birthday(null)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage);
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
         UserController uc = new UserController(service);
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> uc.create(user));
@@ -146,7 +148,7 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage);
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
         UserController uc = new UserController(service);
         uc.create(user);
         assertEquals(1, uc.getById(user.getId()).getId());
@@ -162,7 +164,7 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage);
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
         UserController uc = new UserController(service);
         uc.create(user);
         uc.create(friend);
@@ -181,7 +183,7 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage);
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
         UserController uc = new UserController(service);
         uc.create(user);
         uc.create(friend);
@@ -201,7 +203,7 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage);
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
         UserController uc = new UserController(service);
         uc.create(user);
         uc.create(friend);
@@ -223,7 +225,7 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage);
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
         UserController uc = new UserController(service);
         uc.create(userOne);
         uc.create(userTwo);
