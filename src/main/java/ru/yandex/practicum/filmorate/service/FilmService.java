@@ -27,8 +27,7 @@ public class FilmService {
     private final FilmStorage filmStorage;
     @Qualifier("DbUserStorage")
     private final UserStorage userStorage;
-    @Qualifier("DbEventStorage")
-    private final EventStorage eventStorage;
+    private final EventService eventService;
     private final DirectorService directorService;
 
     public Film getById(int id) {

@@ -21,8 +21,7 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-    @Qualifier("DbEventStorage")
-    private final EventStorage eventStorage;
+    private final EventService eventService;
 
     public Review create(Review review) {
         checkUser(review.getUserId());
@@ -36,7 +35,7 @@ public class ReviewService {
                 .eventType("REVIEW")
                 .operation("ADD")
                 .build();
-        eventStorage.addEvent(event);
+        eventService.addEvent(event);
 
         return reviewInReturningCondition;
     }
@@ -52,7 +51,7 @@ public class ReviewService {
                 .eventType("REVIEW")
                 .operation("UPDATE")
                 .build();
-        eventStorage.addEvent(event);
+        eventService.addEvent(event);
 
         return reviewInReturningCondition;
     }
@@ -71,7 +70,7 @@ public class ReviewService {
 
         boolean wasRemoved = reviewStorage.remove(id);
 
-        eventStorage.addEvent(event);
+        eventService.addEvent(event);
 
         return wasRemoved;
     }

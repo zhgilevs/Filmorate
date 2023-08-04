@@ -24,8 +24,10 @@ public class DbEventStorage implements EventStorage{
     @Override
     public void addEvent(Event event) {
         event.setTimestamp(LocalDate.now());
+
         String sqlQuery = "INSERT INTO feeds (userId, entityId, timestamp, eventType, operation) " +
                 "VALUES (?, ?, ?, ?, ?)";
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"ID"});

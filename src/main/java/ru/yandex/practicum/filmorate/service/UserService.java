@@ -17,15 +17,14 @@ public class UserService {
 
     private static final String USER_NOT_FOUND = "Пользователь с ID: '%s' не найден";
     private final UserStorage storage;
-    @Qualifier("DbEventStorage")
-    private final EventStorage eventStorage;
+
+    private final EventService eventService;
 
     @Autowired
     public UserService(
-            @Qualifier("DbUserStorage") UserStorage storage,
-            @Qualifier("DbEventStorage") EventStorage eventStorage) {
+            @Qualifier("DbUserStorage") UserStorage storage, EventService eventService) {
         this.storage = storage;
-        this.eventStorage = eventStorage;
+        this.eventService = eventService;
     }
 
     public User getById(int id) {
