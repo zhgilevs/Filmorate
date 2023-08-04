@@ -19,8 +19,9 @@ import java.util.List;
 @Component("DbEventStorage")
 @Primary
 @RequiredArgsConstructor
-public class DbEventStorage implements EventStorage{
+public class DbEventStorage implements EventStorage {
     private final JdbcOperations jdbcTemplate;
+
     @Override
     public void addEvent(Event event) {
         event.setTimestamp(LocalDate.now());
@@ -32,19 +33,19 @@ public class DbEventStorage implements EventStorage{
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"ID"});
             stmt.setInt(1, event.getUserId());
-            stmt.setInt(2, event.getEventId());
-            stmt.setDate(4, Date.valueOf(event.getTimestamp()));
-            stmt.setString(5, event.getEventType());
+            stmt.setInt(2, event.getEntityId());
+            stmt.setDate(3, Date.valueOf(event.getTimestamp()));
+            stmt.setString(4, event.getEventType());
             stmt.setString(5, event.getOperation());
             return stmt;
         }, keyHolder);
     }
 
     @Override
-    public List<Event> getFeedByUserId(int userId) {
-        String sqlQuery = "SELECT * FROM feeds WHERE userId=? ORDER BY eventId DESC";
+    public List<Event> getUserFeeds(int userId) {
+        String sqlQuery = "SELECT * FROM feeds WHERE userId=? ORDER BY id DESC";
 
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeEvent(rs));
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeEvent(rs), userId);
     }
 
     private Event makeEvent(ResultSet rs) {

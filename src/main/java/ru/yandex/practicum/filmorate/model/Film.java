@@ -19,10 +19,10 @@ import java.util.Set;
 @Builder
 public class Film {
 
-    private int id;
     @JsonIgnore
     private final Set<Integer> likes = new HashSet<>();
     private final Set<Genre> genres = new HashSet<>();
+    private int id;
     @NotBlank
     @Size(min = 1, max = 200, message = "Описание должно быть не более 200 символов и не менее 1 символа")
     private String description;

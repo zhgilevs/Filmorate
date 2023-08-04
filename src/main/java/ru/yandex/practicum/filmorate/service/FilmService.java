@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.director.Director;
-import ru.yandex.practicum.filmorate.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -139,28 +138,24 @@ public class FilmService {
         Director director = directorService.getById(directorId);
         List<Film> directorFilms = filmStorage.getFilmsByDirector(director);
         directorService.handleDirectorsWhenGetListFilms(directorFilms);
-        switch (sort) {
-            case "year": {
-                directorFilms = directorFilms.stream()
-                        .sorted(new Comparator<Film>() {
-                            @Override
-                            public int compare(Film o1, Film o2) {
-                                return o1.getReleaseDate().getYear() - o2.getReleaseDate().getYear();
-                            }
-                        })
-                        .collect(Collectors.toList());
-                break;
-            }
-            default: {
-                directorFilms = directorFilms.stream()
-                        .sorted(new Comparator<Film>() {
-                            @Override
-                            public int compare(Film o1, Film o2) {
-                                return o1.getLikes().size() - o2.getLikes().size();
-                            }
-                        })
-                        .collect(Collectors.toList());
-            }
+        if (sort.equals("year")) {
+            directorFilms = directorFilms.stream()
+                    .sorted(new Comparator<Film>() {
+                        @Override
+                        public int compare(Film o1, Film o2) {
+                            return o1.getReleaseDate().getYear() - o2.getReleaseDate().getYear();
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            directorFilms = directorFilms.stream()
+                    .sorted(new Comparator<Film>() {
+                        @Override
+                        public int compare(Film o1, Film o2) {
+                            return o1.getLikes().size() - o2.getLikes().size();
+                        }
+                    })
+                    .collect(Collectors.toList());
         }
         System.out.println(directorFilms);
         return directorFilms;
