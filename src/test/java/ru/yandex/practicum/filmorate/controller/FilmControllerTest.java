@@ -102,7 +102,7 @@ class FilmControllerTest {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
         FilmService service = new FilmService(filmStorage, userStorage,
-                new EventService(new EventStorageForTests()), new DirectorService(new DirectorStorageForTests()));
+                new EventService(new EventStorageForTests(), null), new DirectorService(new DirectorStorageForTests()));
         FilmController fc = new FilmController(service);
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> fc.create(film));
@@ -121,7 +121,7 @@ class FilmControllerTest {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
         FilmService service = new FilmService(filmStorage, userStorage,
-                new EventService(new EventStorageForTests()), new DirectorService(new DirectorStorageForTests()));
+                new EventService(new EventStorageForTests(), null), new DirectorService(new DirectorStorageForTests()));
         FilmController fc = new FilmController(service);
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> fc.create(film));
@@ -151,7 +151,7 @@ class FilmControllerTest {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
         FilmService service = new FilmService(filmStorage, userStorage,
-                new EventService(new EventStorageForTests()), new DirectorService(new DirectorStorageForTests()));
+                new EventService(new EventStorageForTests(), null), new DirectorService(new DirectorStorageForTests()));
         FilmController fc = new FilmController(service);
     }
 
@@ -168,10 +168,10 @@ class FilmControllerTest {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
         FilmService filmService = new FilmService(filmStorage, userStorage,
-                new EventService(new EventStorageForTests()), new DirectorService(new DirectorStorageForTests()));
-        UserService userService = new UserService(userStorage, new EventService(new EventStorageForTests()));
+                new EventService(new EventStorageForTests(), null), new DirectorService(new DirectorStorageForTests()));
+        UserService userService = new UserService(userStorage, new EventService(new EventStorageForTests(), null));
         FilmController fc = new FilmController(filmService);
-        UserController uc = new UserController(userService, new EventService(new EventStorageForTests()));
+        UserController uc = new UserController(userService, new EventService(new EventStorageForTests(), null));
         fc.create(film);
         uc.create(user);
         fc.setLike(film.getId(), user.getId());
@@ -191,10 +191,10 @@ class FilmControllerTest {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
         FilmService filmService = new FilmService(filmStorage, userStorage,
-                new EventService(new EventStorageForTests()), new DirectorService(new DirectorStorageForTests()));
-        UserService userService = new UserService(userStorage, new EventService(new EventStorageForTests()));
+                new EventService(new EventStorageForTests(), null), new DirectorService(new DirectorStorageForTests()));
+        UserService userService = new UserService(userStorage, new EventService(new EventStorageForTests(), null));
         FilmController fc = new FilmController(filmService);
-        UserController uc = new UserController(userService, new EventService(new EventStorageForTests()));
+        UserController uc = new UserController(userService, new EventService(new EventStorageForTests(), null));
         fc.create(film);
         uc.create(user);
         fc.setLike(film.getId(), user.getId());
@@ -219,10 +219,10 @@ class FilmControllerTest {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
         FilmService filmService = new FilmService(filmStorage, userStorage,
-                new EventService(new EventStorageForTests()), new DirectorService(new DirectorStorageForTests()));
-        UserService userService = new UserService(userStorage, new EventService(new EventStorageForTests()));
+                new EventService(new EventStorageForTests(), null), new DirectorService(new DirectorStorageForTests()));
+        UserService userService = new UserService(userStorage, new EventService(new EventStorageForTests(), null));
         FilmController fc = new FilmController(filmService);
-        UserController uc = new UserController(userService, new EventService(new EventStorageForTests()));
+        UserController uc = new UserController(userService, new EventService(new EventStorageForTests(), null));
         fc.create(filmOne);
         fc.create(filmTwo);
         uc.create(user);

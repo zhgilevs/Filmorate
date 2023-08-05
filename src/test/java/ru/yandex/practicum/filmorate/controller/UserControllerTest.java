@@ -75,8 +75,8 @@ class UserControllerTest {
                 .name(null).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests(), null));
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests(), null));
         User createdUser = uc.create(user);
         assertEquals(USER_LOGIN, createdUser.getName(), VALIDATION_ERROR);
     }
@@ -88,8 +88,8 @@ class UserControllerTest {
                 .name("").email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests(), null));
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests(), null));
         User createdUser = uc.create(user);
         assertEquals(USER_LOGIN, createdUser.getName(), VALIDATION_ERROR);
     }
@@ -113,8 +113,8 @@ class UserControllerTest {
                 .birthday(null)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests(), null));
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests(), null));
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> uc.create(user));
         assertEquals("Дата рождения должна быть передана в запросе", ex.getMessage(),
@@ -148,8 +148,8 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests(), null));
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests(), null));
         uc.create(user);
         assertEquals(1, uc.getById(user.getId()).getId());
     }
@@ -164,8 +164,8 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests(), null));
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests(), null));
         uc.create(user);
         uc.create(friend);
         uc.addToFriends(user.getId(), friend.getId());
@@ -183,8 +183,8 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests(), null));
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests(), null));
         uc.create(user);
         uc.create(friend);
         uc.addToFriends(user.getId(), friend.getId());
@@ -203,8 +203,8 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests(), null));
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests(), null));
         uc.create(user);
         uc.create(friend);
         uc.addToFriends(user.getId(), friend.getId());
@@ -225,8 +225,8 @@ class UserControllerTest {
                 .name(USER_NAME).email(USER_EMAIL).login(USER_LOGIN).birthday(USER_BIRTHDAY)
                 .build();
         UserStorage storage = new InMemoryUserStorage();
-        UserService service = new UserService(storage, new EventService(new EventStorageForTests()));
-        UserController uc = new UserController(service, new EventService(new EventStorageForTests()));
+        UserService service = new UserService(storage, new EventService(new EventStorageForTests(), null));
+        UserController uc = new UserController(service, new EventService(new EventStorageForTests(), null));
         uc.create(userOne);
         uc.create(userTwo);
         uc.create(commonFriend);

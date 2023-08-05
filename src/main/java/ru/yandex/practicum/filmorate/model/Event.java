@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import java.time.Instant;
 
 @AllArgsConstructor
 @Getter
@@ -16,7 +16,7 @@ public class Event {
     private Integer userId;
     @NotNull
     private Integer entityId;
-    private LocalDate timestamp;
+    private Instant timestamp;
     @NotNull
     private String eventType;
     @NotNull

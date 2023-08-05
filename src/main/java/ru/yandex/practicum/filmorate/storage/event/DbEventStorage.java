@@ -9,11 +9,10 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.DatabaseException;
 import ru.yandex.practicum.filmorate.model.Event;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 
 @Component("DbEventStorage")
@@ -24,7 +23,7 @@ public class DbEventStorage implements EventStorage {
 
     @Override
     public void addEvent(Event event) {
-        event.setTimestamp(LocalDate.now());
+        event.setTimestamp(Instant.now());
 
         String sqlQuery = "INSERT INTO feeds (userId, entityId, timestamp, eventType, operation) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -34,7 +33,7 @@ public class DbEventStorage implements EventStorage {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"ID"});
             stmt.setInt(1, event.getUserId());
             stmt.setInt(2, event.getEntityId());
-            stmt.setDate(3, Date.valueOf(event.getTimestamp()));
+            stmt.setLong(3, event.getTimestamp().toEpochMilli());
             stmt.setString(4, event.getEventType());
             stmt.setString(5, event.getOperation());
             return stmt;
@@ -54,7 +53,7 @@ public class DbEventStorage implements EventStorage {
                     .eventId(rs.getInt("ID"))
                     .userId(rs.getInt("userId"))
                     .entityId(rs.getInt("entityId"))
-                    .timestamp(rs.getDate("timestamp").toLocalDate())
+                    .timestamp(Instant.ofEpochMilli(rs.getLong("timestamp")))
                     .eventType(rs.getString("eventType"))
                     .operation(rs.getString("operation"))
                     .build();
