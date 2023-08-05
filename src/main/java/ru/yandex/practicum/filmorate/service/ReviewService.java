@@ -28,7 +28,7 @@ public class ReviewService {
         Review reviewInReturningCondition = reviewStorage.create(review);
 
         Event event = Event.builder()
-                .userId(review.getUserId())
+                .userId(reviewInReturningCondition.getUserId())
                 .entityId(reviewInReturningCondition.getReviewId())
                 .eventType("REVIEW")
                 .operation("ADD")
@@ -44,7 +44,7 @@ public class ReviewService {
         Review reviewInReturningCondition = reviewStorage.update(review);
 
         Event event = Event.builder()
-                .userId(review.getUserId())
+                .userId(reviewInReturningCondition.getUserId())
                 .entityId(reviewInReturningCondition.getReviewId())
                 .eventType("REVIEW")
                 .operation("UPDATE")
