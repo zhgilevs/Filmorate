@@ -42,7 +42,7 @@ public class DbEventStorage implements EventStorage {
 
     @Override
     public List<Event> getUserFeeds(int userId) {
-        String sqlQuery = "SELECT * FROM feeds WHERE userId=? ORDER BY id DESC";
+        String sqlQuery = "SELECT * FROM feeds WHERE userId=? ORDER BY id";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeEvent(rs), userId);
     }
