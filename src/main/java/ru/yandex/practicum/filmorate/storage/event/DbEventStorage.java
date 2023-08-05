@@ -23,7 +23,7 @@ public class DbEventStorage implements EventStorage {
 
     @Override
     public void addEvent(Event event) {
-        event.setTimestamp(Instant.now());
+        event.setTimestamp(Instant.now().toEpochMilli());
 
         String sqlQuery = "INSERT INTO feeds (userId, entityId, timestamp, eventType, operation) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -33,7 +33,7 @@ public class DbEventStorage implements EventStorage {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"ID"});
             stmt.setInt(1, event.getUserId());
             stmt.setInt(2, event.getEntityId());
-            stmt.setLong(3, event.getTimestamp().toEpochMilli());
+            stmt.setLong(3, event.getTimestamp());
             stmt.setString(4, event.getEventType());
             stmt.setString(5, event.getOperation());
             return stmt;
@@ -53,7 +53,7 @@ public class DbEventStorage implements EventStorage {
                     .eventId(rs.getInt("ID"))
                     .userId(rs.getInt("userId"))
                     .entityId(rs.getInt("entityId"))
-                    .timestamp(Instant.ofEpochMilli(rs.getLong("timestamp")))
+                    .timestamp(rs.getLong("timestamp"))
                     .eventType(rs.getString("eventType"))
                     .operation(rs.getString("operation"))
                     .build();
