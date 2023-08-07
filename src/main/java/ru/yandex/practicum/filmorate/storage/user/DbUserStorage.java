@@ -11,8 +11,8 @@ import ru.yandex.practicum.filmorate.exception.DatabaseException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.DbFilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -26,6 +26,8 @@ import java.util.*;
 public class DbUserStorage implements UserStorage {
 
     private final JdbcOperations jdbcTemplate;
+
+    private final DbFilmStorage dbFilmStorage;
 
     @Override
     public List<User> getAll() {
@@ -158,15 +160,7 @@ public class DbUserStorage implements UserStorage {
                 int filmId = rs.getInt("id");
 
                 if (!filmMap.containsKey(filmId)) {
-                    Film film = Film.builder()
-                            .id(filmId)
-                            .name(rs.getString("name"))
-                            .description(rs.getString("description"))
-                            .duration(rs.getInt("duration"))
-                            .releaseDate(rs.getDate("release_date").toLocalDate())
-                            .mpa(new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name"),
-                                    rs.getString("mpa_description")))
-                            .build();
+                    Film film = dbFilmStorage.makeFilm(rs);
 
                     filmMap.put(filmId, film);
                 }
