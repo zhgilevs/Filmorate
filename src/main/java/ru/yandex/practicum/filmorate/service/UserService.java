@@ -59,7 +59,7 @@ public class UserService {
 
         User userInReturningCondition = storage.removeFromFriends(userId, friendId);
 
-        eventService.addEvent("FRIEND", "Remove", userId, friendId);
+        eventService.addEvent("FRIEND", "REMOVE", userId, friendId);
 
         return userInReturningCondition;
     }
