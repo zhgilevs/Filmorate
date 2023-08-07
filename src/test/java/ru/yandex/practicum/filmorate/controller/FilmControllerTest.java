@@ -218,6 +218,6 @@ class FilmControllerTest {
         uc.create(user);
         fc.setLike(filmOne.getId(), user.getId());
         fc.setLike(filmTwo.getId(), user.getId());
-        assertEquals(2, fc.getPopularFilms(10).size());
+        assertEquals(2, fc.getPopularFilms(10, 1, 1967).size());
     }
 }
