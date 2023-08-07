@@ -9,16 +9,16 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.DatabaseException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.DbFilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component("DbUserStorage")
 @Primary
@@ -26,6 +26,8 @@ import java.util.Objects;
 public class DbUserStorage implements UserStorage {
 
     private final JdbcOperations jdbcTemplate;
+
+    private final DbFilmStorage dbFilmStorage;
 
     @Override
     public List<User> getAll() {
@@ -131,6 +133,52 @@ public class DbUserStorage implements UserStorage {
             return idFromUsers == id;
         }
         return false;
+    }
+
+    @Override
+    public List<Film> getRecommendedFilmForUser(int targetUserId) {
+        String sql = "SELECT DISTINCT f.id, f.name, f.description, f.duration, f.release_date, " +
+                "f.mpa_id, m.name AS mpa_name, m.description AS mpa_description, " +
+                "g.genre_id, g.name AS genre_name " +
+                "FROM films f " +
+                "INNER JOIN likes l ON f.id = l.film_id " +
+                "INNER JOIN ( " +
+                "  SELECT user_id FROM likes WHERE film_id IN " +
+                "  (SELECT film_id FROM likes WHERE user_id = ?) " +
+                "  AND user_id <> ? " +
+                ") u ON l.user_id = u.user_id " +
+                "LEFT JOIN likes tl ON tl.film_id = f.id AND tl.user_id = ? " +
+                "LEFT JOIN mpas m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+                "LEFT JOIN genres g ON fg.genre_id = g.genre_id " +
+                "WHERE tl.user_id IS NULL";
+
+        Map<Integer, Film> filmMap = new HashMap<>();
+
+        jdbcTemplate.query(sql, (ResultSet rs) -> {
+            try {
+                int filmId = rs.getInt("id");
+
+                if (!filmMap.containsKey(filmId)) {
+                    Film film = dbFilmStorage.makeFilm(rs);
+
+                    filmMap.put(filmId, film);
+                }
+
+                Film film = filmMap.get(filmId);
+
+                int genreId = rs.getInt("genre_id");
+                String genreName = rs.getString("genre_name");
+                if (genreId != 0 && genreName != null) {
+                    Genre genre = new Genre(genreId, genreName);
+                    film.getGenres().add(genre);
+                }
+            } catch (SQLException e) {
+                throw new DatabaseException("Ошибка обработки ResultSet", e);
+            }
+        }, targetUserId, targetUserId, targetUserId);
+
+        return new ArrayList<>(filmMap.values());
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) {
