@@ -85,7 +85,7 @@ public class UserService {
     }
 
     public List<Film> getRecommendedFilmForUser(int targetUserId) {
-        if (!storage.isExists(targetUserId)){
+        if (!storage.isExists(targetUserId)) {
             throw new NotFoundException(String.format(USER_NOT_FOUND, targetUserId));
         }
         return storage.getRecommendedFilmForUser(targetUserId);
