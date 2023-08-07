@@ -58,11 +58,11 @@ public class FilmService {
         return filmStorage.removeLike(id, userId);
     }
 
-    public List<Film> getPopular(int count) {
+    public List<Film> getPopular(int count, Integer genreId, Integer year) {
         if (filmStorage.getAll().isEmpty()) {
             throw new NotFoundException("Список фильмов пуст");
         } else {
-            List<Film> films = filmStorage.getPopular(count);
+            List<Film> films = filmStorage.getPopular(count, genreId, year);
             directorService.handleDirectorsWhenGetListFilms(films);
             return films;
         }

@@ -95,7 +95,7 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopular(int count) {
+    public List<Film> getPopular(int count, Integer genreId, Integer year) {
         String sqlQuery =
                 "SELECT F.ID,F.NAME,F.DESCRIPTION,F.DURATION,F.RELEASE_DATE,F.MPA_ID " +
                         "FROM FILMS F " +
@@ -103,6 +103,41 @@ public class DbFilmStorage implements FilmStorage {
                         "GROUP BY F.ID " +
                         "ORDER BY COUNT(L.USER_ID) DESC " +
                         "LIMIT ?;";
+        if (Objects.nonNull(genreId) && Objects.nonNull(year)) {
+            sqlQuery =
+                    "SELECT F.ID,F.NAME,F.DESCRIPTION,F.DURATION,F.RELEASE_DATE,F.MPA_ID " +
+                            "FROM FILMS F " +
+                            "LEFT JOIN LIKES L ON F.ID = L.FILM_ID " +
+                            "WHERE EXTRACT(YEAR FROM F.RELEASE_DATE) = ? AND F.ID IN " +
+                            "(SELECT FILM_ID FROM FILM_GENRES FG WHERE FG.GENRE_ID = ?) " +
+                            "GROUP BY F.ID " +
+                            "ORDER BY COUNT(L.USER_ID) DESC " +
+                            "LIMIT ?;";
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), year, genreId, count);
+        }
+        if (Objects.nonNull(genreId) || Objects.nonNull(year)) {
+            if (Objects.nonNull(genreId)) {
+                sqlQuery =
+                        "SELECT F.ID,F.NAME,F.DESCRIPTION,F.DURATION,F.RELEASE_DATE,F.MPA_ID " +
+                                "FROM FILMS F " +
+                                "LEFT JOIN LIKES L ON F.ID = L.FILM_ID " +
+                                "WHERE F.ID IN " +
+                                "(SELECT FILM_ID FROM FILM_GENRES FG WHERE FG.GENRE_ID = ?) " +
+                                "GROUP BY F.ID " +
+                                "ORDER BY COUNT(L.USER_ID) DESC " +
+                                "LIMIT ?;";
+                return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), genreId, count);
+            }
+            sqlQuery =
+                    "SELECT F.ID,F.NAME,F.DESCRIPTION,F.DURATION,F.RELEASE_DATE,F.MPA_ID " +
+                            "FROM FILMS F " +
+                            "LEFT JOIN LIKES L ON F.ID = L.FILM_ID " +
+                            "WHERE EXTRACT(YEAR FROM F.RELEASE_DATE) = ? " +
+                            "GROUP BY F.ID " +
+                            "ORDER BY COUNT(L.USER_ID) DESC " +
+                            "LIMIT ?;";
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), year, count);
+        }
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
     }
 
