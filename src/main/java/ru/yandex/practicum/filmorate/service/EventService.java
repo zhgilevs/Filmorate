@@ -27,10 +27,18 @@ public class EventService {
         this.userStorage = userStorage;
     }
 
-    public void addEvent(Event event) {
+    public void addEvent(String eventType, String eventOperation, int userId, int entityId) {
         //проверка на присутствие пользователя выполняется перед каждым вызовом метода
         log.debug("Добавление события пользователя {} {} {} {}.",
-                event.getUserId(), event.getOperation(), event.getEventType(), event.getEntityId());
+                userId, eventOperation, eventType, entityId);
+
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(entityId)
+                .eventType(eventType)
+                .operation(eventOperation)
+                .build();
+
         eventStorage.addEvent(event);
     }
 

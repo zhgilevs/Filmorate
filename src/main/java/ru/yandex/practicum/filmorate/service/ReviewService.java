@@ -27,13 +27,8 @@ public class ReviewService {
 
         Review reviewInReturningCondition = reviewStorage.create(review);
 
-        Event event = Event.builder()
-                .userId(reviewInReturningCondition.getUserId())
-                .entityId(reviewInReturningCondition.getReviewId())
-                .eventType("REVIEW")
-                .operation("ADD")
-                .build();
-        eventService.addEvent(event);
+        eventService.addEvent("REVIEW", "ADD",
+                reviewInReturningCondition.getUserId(), reviewInReturningCondition.getReviewId());
 
         return reviewInReturningCondition;
     }
@@ -43,13 +38,8 @@ public class ReviewService {
 
         Review reviewInReturningCondition = reviewStorage.update(review);
 
-        Event event = Event.builder()
-                .userId(reviewInReturningCondition.getUserId())
-                .entityId(reviewInReturningCondition.getReviewId())
-                .eventType("REVIEW")
-                .operation("UPDATE")
-                .build();
-        eventService.addEvent(event);
+        eventService.addEvent("REVIEW", "UPDATE",
+                reviewInReturningCondition.getUserId(), reviewInReturningCondition.getReviewId());
 
         return reviewInReturningCondition;
     }
@@ -59,16 +49,10 @@ public class ReviewService {
 
         Review review = getById(id);
 
-        Event event = Event.builder()
-                .userId(review.getUserId())
-                .entityId(review.getReviewId())
-                .eventType("REVIEW")
-                .operation("REMOVE")
-                .build();
-
         boolean wasRemoved = reviewStorage.remove(id);
 
-        eventService.addEvent(event);
+        eventService.addEvent("REVIEW", "REMOVE",
+                review.getUserId(), review.getReviewId());
 
         return wasRemoved;
     }

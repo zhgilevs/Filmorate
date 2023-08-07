@@ -50,13 +50,7 @@ public class FilmService {
 
         Film filmInReturningCondition = filmStorage.addLike(id, userId);
 
-        Event event = Event.builder()
-                .userId(userId)
-                .entityId(id)
-                .eventType("LIKE")
-                .operation("ADD")
-                .build();
-        eventService.addEvent(event);
+        eventService.addEvent("LIKE", "ADD", userId, id);
 
         return filmInReturningCondition;
     }
@@ -71,13 +65,7 @@ public class FilmService {
 
         Film filmInReturningCondition = filmStorage.removeLike(id, userId);
 
-        Event event = Event.builder()
-                .userId(userId)
-                .entityId(id)
-                .eventType("LIKE")
-                .operation("REMOVE")
-                .build();
-        eventService.addEvent(event);
+        eventService.addEvent("LIKE", "REMOVE", userId, id);
 
         return filmInReturningCondition;
     }

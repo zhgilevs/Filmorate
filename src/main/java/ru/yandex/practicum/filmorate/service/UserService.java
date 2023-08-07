@@ -45,13 +45,7 @@ public class UserService {
 
         User userInReturningCondition = storage.addToFriends(userId, friendId);
 
-        Event event = Event.builder()
-                .userId(userId)
-                .entityId(friendId)
-                .eventType("FRIEND")
-                .operation("ADD")
-                .build();
-        eventService.addEvent(event);
+        eventService.addEvent("FRIEND", "ADD", userId, friendId);
 
         return userInReturningCondition;
     }
@@ -66,13 +60,7 @@ public class UserService {
 
         User userInReturningCondition = storage.removeFromFriends(userId, friendId);
 
-        Event event = Event.builder()
-                .userId(userId)
-                .entityId(friendId)
-                .eventType("FRIEND")
-                .operation("REMOVE")
-                .build();
-        eventService.addEvent(event);
+        eventService.addEvent("FRIEND", "Remove", userId, friendId);
 
         return userInReturningCondition;
     }
