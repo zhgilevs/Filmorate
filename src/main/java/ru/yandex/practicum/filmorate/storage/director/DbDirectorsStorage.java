@@ -124,8 +124,9 @@ public class DbDirectorsStorage implements DirectorsStorage {
                 .collect(Collectors.toMap(film -> film.getId(), film -> new HashSet<Director>()));
         final String sqlQuery = "select * " +
                 "from FILMS_AND_DIRECTORS " +
-                "left join DIRECTORS D on D.DIRECTOR_ID = FILMS_AND_DIRECTORS.DIRECTOR_ID";
-        SqlRowSet sqlRowSet = jdbcOperations.queryForRowSet(sqlQuery, Map.of());
+                "left join DIRECTORS D on D.DIRECTOR_ID = FILMS_AND_DIRECTORS.DIRECTOR_ID " +
+                "where FILM_ID IN (:filmsIds)";
+        SqlRowSet sqlRowSet = jdbcOperations.queryForRowSet(sqlQuery, Map.of("filmsIds", new ArrayList(filmsAndDirectors.keySet())));
 
         while (sqlRowSet.next()) {
             int filmId = sqlRowSet.getInt("FILM_ID");
@@ -136,6 +137,7 @@ public class DbDirectorsStorage implements DirectorsStorage {
             director.setName(directorName);
             director.setId(directorId);
             filmsAndDirectors.get(filmId).add(director);
+            System.out.println("1.6");
         }
         return filmsAndDirectors;
     }
