@@ -18,10 +18,13 @@ public class UserService {
     private static final String USER_NOT_FOUND = "Пользователь с ID: '%s' не найден";
     private final UserStorage storage;
 
+    private final EventService eventService;
+
     @Autowired
     public UserService(
-            @Qualifier("DbUserStorage") UserStorage storage) {
+            @Qualifier("DbUserStorage") UserStorage storage, EventService eventService) {
         this.storage = storage;
+        this.eventService = eventService;
     }
 
     public User getById(int id) {
@@ -39,7 +42,12 @@ public class UserService {
         if (!storage.isExists(friendId)) {
             throw new NotFoundException(String.format(USER_NOT_FOUND, friendId));
         }
-        return storage.addToFriends(userId, friendId);
+
+        User userInReturningCondition = storage.addToFriends(userId, friendId);
+
+        eventService.addEvent("FRIEND", "ADD", userId, friendId);
+
+        return userInReturningCondition;
     }
 
     public User removeFromFriends(int userId, int friendId) {
@@ -49,7 +57,12 @@ public class UserService {
         if (!storage.isExists(friendId)) {
             throw new NotFoundException(String.format(USER_NOT_FOUND, friendId));
         }
-        return storage.removeFromFriends(userId, friendId);
+
+        User userInReturningCondition = storage.removeFromFriends(userId, friendId);
+
+        eventService.addEvent("FRIEND", "REMOVE", userId, friendId);
+
+        return userInReturningCondition;
     }
 
     public List<User> getFriendList(int id) {

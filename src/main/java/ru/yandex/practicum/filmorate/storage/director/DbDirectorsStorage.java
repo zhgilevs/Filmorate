@@ -20,6 +20,14 @@ import java.util.stream.Collectors;
 public class DbDirectorsStorage implements DirectorsStorage {
     private final NamedParameterJdbcOperations jdbcOperations;
 
+    private static MapSqlParameterSource getMapToQuery(Director director) {
+        MapSqlParameterSource map = new MapSqlParameterSource();
+
+        map.addValue("name", director.getName());
+        map.addValue("id", director.getId());
+        return map;
+    }
+
     @Override
     public Director create(Director director) {
         final String sqlQuery = "insert into DIRECTORS (NAME) " + // в подготовленных тестах уже приходит id
@@ -55,14 +63,6 @@ public class DbDirectorsStorage implements DirectorsStorage {
 
         jdbcOperations.update(sqlQuery, getMapToQuery(director));
         return director;
-    }
-
-    private static MapSqlParameterSource getMapToQuery(Director director) {
-        MapSqlParameterSource map = new MapSqlParameterSource();
-
-        map.addValue("name", director.getName());
-        map.addValue("id", director.getId());
-        return map;
     }
 
     @Override

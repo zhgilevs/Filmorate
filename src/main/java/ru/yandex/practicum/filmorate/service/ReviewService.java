@@ -18,21 +18,42 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final EventService eventService;
 
     public Review create(Review review) {
         checkUser(review.getUserId());
         checkFilm(review.getFilmId());
-        return reviewStorage.create(review);
+
+        Review reviewInReturningCondition = reviewStorage.create(review);
+
+        eventService.addEvent("REVIEW", "ADD",
+                reviewInReturningCondition.getUserId(), reviewInReturningCondition.getReviewId());
+
+        return reviewInReturningCondition;
     }
 
     public Review update(Review review) {
         checkReview(review.getReviewId());
-        return reviewStorage.update(review);
+
+        Review reviewInReturningCondition = reviewStorage.update(review);
+
+        eventService.addEvent("REVIEW", "UPDATE",
+                reviewInReturningCondition.getUserId(), reviewInReturningCondition.getReviewId());
+
+        return reviewInReturningCondition;
     }
 
     public boolean remove(int id) {
         checkReview(id);
-        return reviewStorage.remove(id);
+
+        Review review = getById(id);
+
+        boolean wasRemoved = reviewStorage.remove(id);
+
+        eventService.addEvent("REVIEW", "REMOVE",
+                review.getUserId(), review.getReviewId());
+
+        return wasRemoved;
     }
 
     public Review getById(int id) {

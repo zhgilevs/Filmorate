@@ -26,6 +26,7 @@ public class FilmService {
     private final FilmStorage filmStorage;
     @Qualifier("DbUserStorage")
     private final UserStorage userStorage;
+    private final EventService eventService;
     private final DirectorService directorService;
 
     public Film getById(int id) {
@@ -45,7 +46,12 @@ public class FilmService {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format(USER_NOT_FOUND, userId));
         }
-        return filmStorage.addLike(id, userId);
+
+        Film filmInReturningCondition = filmStorage.addLike(id, userId);
+
+        eventService.addEvent("LIKE", "ADD", userId, id);
+
+        return filmInReturningCondition;
     }
 
     public Film removeLike(int id, int userId) {
@@ -55,7 +61,12 @@ public class FilmService {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format(USER_NOT_FOUND, userId));
         }
-        return filmStorage.removeLike(id, userId);
+
+        Film filmInReturningCondition = filmStorage.removeLike(id, userId);
+
+        eventService.addEvent("LIKE", "REMOVE", userId, id);
+
+        return filmInReturningCondition;
     }
 
     public List<Film> getPopular(int count, Integer genreId, Integer year) {
@@ -114,28 +125,24 @@ public class FilmService {
         Director director = directorService.getById(directorId);
         List<Film> directorFilms = filmStorage.getFilmsByDirector(director);
         directorService.handleDirectorsWhenGetListFilms(directorFilms);
-        switch (sort) {
-            case "year": {
-                directorFilms = directorFilms.stream()
-                        .sorted(new Comparator<Film>() {
-                            @Override
-                            public int compare(Film o1, Film o2) {
-                                return o1.getReleaseDate().getYear() - o2.getReleaseDate().getYear();
-                            }
-                        })
-                        .collect(Collectors.toList());
-                break;
-            }
-            default: {
-                directorFilms = directorFilms.stream()
-                        .sorted(new Comparator<Film>() {
-                            @Override
-                            public int compare(Film o1, Film o2) {
-                                return o1.getLikes().size() - o2.getLikes().size();
-                            }
-                        })
-                        .collect(Collectors.toList());
-            }
+        if (sort.equals("year")) {
+            directorFilms = directorFilms.stream()
+                    .sorted(new Comparator<Film>() {
+                        @Override
+                        public int compare(Film o1, Film o2) {
+                            return o1.getReleaseDate().getYear() - o2.getReleaseDate().getYear();
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            directorFilms = directorFilms.stream()
+                    .sorted(new Comparator<Film>() {
+                        @Override
+                        public int compare(Film o1, Film o2) {
+                            return o1.getLikes().size() - o2.getLikes().size();
+                        }
+                    })
+                    .collect(Collectors.toList());
         }
         System.out.println(directorFilms);
         return directorFilms;
