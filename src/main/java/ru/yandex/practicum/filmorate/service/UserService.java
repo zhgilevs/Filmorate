@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -94,6 +95,13 @@ public class UserService {
     public User update(User user) {
         validate(user);
         return storage.update(user);
+    }
+
+    public List<Film> getRecommendedFilmForUser(int targetUserId) {
+        if (!storage.isExists(targetUserId)) {
+            throw new NotFoundException(String.format(USER_NOT_FOUND, targetUserId));
+        }
+        return storage.getRecommendedFilmForUser(targetUserId);
     }
 
     private void validate(User user) {

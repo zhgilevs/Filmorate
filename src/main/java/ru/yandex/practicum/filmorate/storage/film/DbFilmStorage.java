@@ -226,7 +226,7 @@ public class DbFilmStorage implements FilmStorage {
         }
     }
 
-    private Film makeFilm(ResultSet rs) {
+    public Film makeFilm(ResultSet rs) {
         try {
             Film film = Film.builder()
                     .id(rs.getInt("ID"))

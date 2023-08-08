@@ -45,4 +45,7 @@ public class Film {
     public void setGenres(Set<Genre> set) {
         genres.addAll(set);
     }
+
+    public Film() {
+    }
 }
