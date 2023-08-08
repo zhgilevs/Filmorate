@@ -210,24 +210,25 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> searchFilms(boolean searchByTitle, boolean searchByDirector, String query) {
-        String sqlQuery = "SELECT * FROM films " +
-                "LEFT JOIN likes ON films.id=likes.film_id ";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("SELECT films.ID, films.NAME, films.DESCRIPTION, films.DURATION, films.RELEASE_DATE, films.MPA_ID, COUNT(likes.user_id) FROM films ");
+        stringBuilder.append("LEFT JOIN likes ON films.id=likes.film_id ");
         if (searchByTitle && searchByDirector) {
-            sqlQuery += "LEFT JOIN films_and_directors ON films.id=films_and_directors.film_id " +
-                    "LEFT JOIN directors ON films_and_directors.director_id=directors.director_id " +
-                    "WHERE UPPER(films.name) LIKE UPPER('%" + query + "%') " +
-                    "OR UPPER(directors.name) LIKE UPPER('%" + query + "%') ";
+            stringBuilder.append("LEFT JOIN films_and_directors ON films.id=films_and_directors.film_id ");
+            stringBuilder.append("LEFT JOIN directors ON films_and_directors.director_id=directors.director_id ");
+            stringBuilder.append("WHERE UPPER(films.name) LIKE UPPER('%" + query + "%') ");
+            stringBuilder.append("OR UPPER(directors.name) LIKE UPPER('%" + query + "%') ");
         } else if (searchByTitle) {
-            sqlQuery += "WHERE UPPER(films.name) LIKE UPPER('%" + query + "%') ";
+            stringBuilder.append("WHERE UPPER(films.name) LIKE UPPER('%" + query + "%') ");
         } else if (searchByDirector) {
-            sqlQuery += "LEFT JOIN films_and_directors ON films.id=films_and_directors.film_id " +
-                    "LEFT JOIN directors ON films_and_directors.director_id=directors.director_id " +
-                    "WHERE UPPER(directors.name) LIKE UPPER('%" + query + "%') ";
+            stringBuilder.append("LEFT JOIN films_and_directors ON films.id=films_and_directors.film_id ");
+            stringBuilder.append("LEFT JOIN directors ON films_and_directors.director_id=directors.director_id ");
+            stringBuilder.append("WHERE UPPER(directors.name) LIKE UPPER('%" + query + "%') ");
         }
-        sqlQuery += "GROUP BY films.id " +
-                "ORDER BY COUNT(likes.user_id) DESC";
+        stringBuilder.append("GROUP BY films.id ");
+        stringBuilder.append("ORDER BY COUNT(likes.user_id) DESC, films.id DESC");
 
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
+        return jdbcTemplate.query(stringBuilder.toString(), (rs, rowNum) -> makeFilm(rs));
     }
 
     private Mpa getMpaById(int id) {

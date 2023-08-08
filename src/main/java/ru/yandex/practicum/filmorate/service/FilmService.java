@@ -156,7 +156,9 @@ public class FilmService {
             throw new ValidationException("Неправельный запрос области поиска");
         }
 
-        return filmStorage.searchFilms(searchByTitle, searchByDirector, query);
+        List<Film> returningList = filmStorage.searchFilms(searchByTitle, searchByDirector, query);
+        System.out.println(returningList);
+        return returningList;
     }
 
     public List<Film> getCommonFilms(int userId, int friendId) {
