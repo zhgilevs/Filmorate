@@ -9,8 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @AllArgsConstructor
 @Getter
@@ -21,7 +20,7 @@ public class Film {
 
     @JsonIgnore
     private final Set<Integer> likes = new HashSet<>();
-    private final Set<Genre> genres = new HashSet<>();
+    private final Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId, (id1, id2) -> id1 - id2));
     private int id;
     @NotBlank
     @Size(min = 1, max = 200, message = "Описание должно быть не более 200 символов и не менее 1 символа")
@@ -36,7 +35,7 @@ public class Film {
     /**
      * Режиссеры фильма.
      */
-    private Set<Director> directors;
+    private HashSet<Director> directors;
 
     public void setLikes(Set<Integer> set) {
         likes.addAll(set);

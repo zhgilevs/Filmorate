@@ -119,8 +119,8 @@ public class DbDirectorsStorage implements DirectorsStorage {
     }
 
     @Override
-    public Map<Integer, Set<Director>> getDirectorsForFilms(List<Film> films) {
-        Map<Integer, Set<Director>> filmsAndDirectors = films.stream()
+    public Map<Integer, HashSet<Director>> getDirectorsForFilms(List<Film> films) {
+        Map<Integer, HashSet<Director>> filmsAndDirectors = films.stream()
                 .collect(Collectors.toMap(film -> film.getId(), film -> new HashSet<Director>()));
         final String sqlQuery = "select * " +
                 "from FILMS_AND_DIRECTORS " +

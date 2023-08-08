@@ -60,7 +60,7 @@ public class DirectorService {
     }
 
     public void handleDirectorsWhenGetListFilms(List<Film> films) {
-        Map<Integer, Set<Director>> filmsAndDirectors = directorsStorage.getDirectorsForFilms(films);
+        Map<Integer, HashSet<Director>> filmsAndDirectors = directorsStorage.getDirectorsForFilms(films);
         films.stream()
                 .peek(film -> film.setDirectors(filmsAndDirectors.get(film.getId())))
                 .collect(Collectors.toList());

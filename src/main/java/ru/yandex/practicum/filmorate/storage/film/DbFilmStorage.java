@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component("DbFilmStorage")
 @Primary
@@ -41,6 +42,7 @@ public class DbFilmStorage implements FilmStorage {
     public Film create(Film film) {
         String filmQuery = "INSERT INTO FILMS (MPA_ID, NAME, DESCRIPTION, RELEASE_DATE, DURATION) values (?, ?, ?, ?, ? );";
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(filmQuery, new String[]{"ID"});
             stmt.setInt(1, film.getMpa().getId());
@@ -51,13 +53,34 @@ public class DbFilmStorage implements FilmStorage {
             return stmt;
         }, keyHolder);
         film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        saveGenresFrom(film);
+        setGenresTo(film);
+        setMpaTo(film);
+        return film;
+    }
+
+    private void setMpaTo(Film film) {
+        Mpa mpa = getMpaById(film.getMpa().getId());
+        film.setMpa(mpa);
+    }
+
+    private void setGenresTo(Film film) {
+        Map<Integer, String> genres = getGenresById(film.getId()).stream()
+                .collect(Collectors.toMap(Genre::getId, Genre::getName));
+        for (Genre genre : film.getGenres()) {
+            Integer genreId = genre.getId();
+            genre.setName(genres.get(genreId));
+        }
+    }
+
+    private void saveGenresFrom(Film film) {
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             String sqlQuery = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) values (?, ?);";
+
             for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update(sqlQuery, film.getId(), genre.getId());
             }
         }
-        return getById(film.getId());
     }
 
     @Override
@@ -89,6 +112,7 @@ public class DbFilmStorage implements FilmStorage {
                     .build();
             film.setGenres(getGenresById(id));
             film.setLikes(getLikesById(id));
+            film.setMpa(getMpaById(film.getMpa().getId()));
             return film;
         }
         return null;
@@ -280,7 +304,7 @@ public class DbFilmStorage implements FilmStorage {
         }
     }
 
-    private Set<Director> getDirectorsByFilmId(int filmId) {
+    private HashSet<Director> getDirectorsByFilmId(int filmId) {
         String sqlQuery = "SELECT director_id, name FROM directors " +
                 "WHERE director_id IN (SELECT director_id FROM films_and_directors WHERE film_id=?)";
         return new HashSet<>(jdbcTemplate.query(sqlQuery, StorageUtils::directorMapRow, filmId));
