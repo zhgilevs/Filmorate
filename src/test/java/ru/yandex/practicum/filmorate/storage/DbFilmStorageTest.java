@@ -104,7 +104,7 @@ class DbFilmStorageTest {
         filmStorage.create(makeFilm());
         filmStorage.create(makeFilm());
         filmStorage.create(makeFilm());
-        List<Film> populars = filmStorage.getPopular(3,1,1972);
+        List<Film> populars = filmStorage.getPopular(3, 1, 1972);
         assertEquals(3, populars.size());
     }
 
