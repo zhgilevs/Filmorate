@@ -158,4 +158,14 @@ public class FilmService {
 
         return filmStorage.searchFilms(searchByTitle, searchByDirector, query);
     }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        if (!userStorage.isExists(userId)) {
+            throw new NotFoundException(USER_NOT_FOUND + userId);
+        } else if (!userStorage.isExists(friendId)) {
+            throw new NotFoundException(USER_NOT_FOUND + friendId);
+        } else {
+            return filmStorage.getCommonFilms(userId, friendId);
+        }
+    }
 }

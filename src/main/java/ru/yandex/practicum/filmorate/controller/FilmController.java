@@ -62,7 +62,7 @@ public class FilmController {
     @ResponseStatus(HttpStatus.OK)
     public List<Film> getFilmsByDirector(@PathVariable int directorId,
                                          @RequestParam(required = false) Optional<String> sortBy) {
-        return service.getFilmsByDirector(directorId, sortBy.orElseGet(() -> "likes"));
+        return service.getFilmsByDirector(directorId, sortBy.orElse("likes"));
     }
 
     @DeleteMapping("/{filmId}")
@@ -75,5 +75,11 @@ public class FilmController {
     public List<Film> searchFilms(@RequestParam String query,
                                   @RequestParam List<String> by) {
         return service.searchFilms(query, by);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam int userId,
+                                     @RequestParam int friendId) {
+        return service.getCommonFilms(userId, friendId);
     }
 }

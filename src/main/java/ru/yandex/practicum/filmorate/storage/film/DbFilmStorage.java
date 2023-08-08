@@ -306,4 +306,15 @@ public class DbFilmStorage implements FilmStorage {
         jdbcTemplate.update(sql, id);
         return film;
     }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sqlQuery = "SELECT f.ID, f.MPA_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION " +
+                "FROM FILMS AS f " +
+                "INNER JOIN LIKES AS l1 ON f.ID = l1.FILM_ID AND l1.USER_ID = ? " +
+                "INNER JOIN LIKES as l2 ON l1.FILM_ID = l2.FILM_ID AND l2.USER_ID = ? " +
+                "LEFT JOIN LIKES AS l ON l.FILM_ID = f.ID " +
+                "GROUP BY f.ID";
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), userId, friendId);
+    }
 }
