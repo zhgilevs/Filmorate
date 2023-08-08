@@ -3,10 +3,10 @@ package ru.yandex.practicum.filmorate.storage.director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.director.Director;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public class DirectorStorageForTests implements DirectorsStorage {
     @Override
@@ -50,7 +50,7 @@ public class DirectorStorageForTests implements DirectorsStorage {
     }
 
     @Override
-    public Map<Integer, Set<Director>> getDirectorsForFilms(List<Film> films) {
+    public Map<Integer, HashSet<Director>> getDirectorsForFilms(List<Film> films) {
         return null;
     }
 }

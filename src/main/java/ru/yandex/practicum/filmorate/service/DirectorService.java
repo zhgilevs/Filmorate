@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.storage.director.DirectorsStorage;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +59,7 @@ public class DirectorService {
     }
 
     public void handleDirectorsWhenGetListFilms(List<Film> films) {
-        Map<Integer, Set<Director>> filmsAndDirectors = directorsStorage.getDirectorsForFilms(films);
+        Map<Integer, HashSet<Director>> filmsAndDirectors = directorsStorage.getDirectorsForFilms(films);
         films.stream()
                 .peek(film -> film.setDirectors(filmsAndDirectors.get(film.getId())))
                 .collect(Collectors.toList());
