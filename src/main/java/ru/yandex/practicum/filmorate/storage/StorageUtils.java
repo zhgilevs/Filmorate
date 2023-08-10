@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.experimental.UtilityClass;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.director.Director;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -5,8 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.director.Director;
-import ru.yandex.practicum.filmorate.model.director.Marker;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 
 import javax.validation.Valid;
@@ -27,7 +26,6 @@ public class DirectorsController {
     private final DirectorService directorService;
 
     @PostMapping
-    @Validated({Marker.OnCreate.class})
     @ResponseStatus(HttpStatus.CREATED)
     Director create(@RequestBody @Valid Director director) {
         log.info("POST /directors: " + director);
@@ -35,7 +33,6 @@ public class DirectorsController {
     }
 
     @PutMapping
-    @Validated({Marker.OnUpdate.class})
     @ResponseStatus(HttpStatus.OK)
     Director update(@RequestBody @Valid Director director) {
         log.info("PUT /directors: " + director);
@@ -43,7 +40,6 @@ public class DirectorsController {
     }
 
     @DeleteMapping("/{id}")
-    @Validated({Marker.OnUpdate.class})
     @ResponseStatus(HttpStatus.OK)
     Director delete(@PathVariable int id) {
         log.info("DELETE /directors/" + id);

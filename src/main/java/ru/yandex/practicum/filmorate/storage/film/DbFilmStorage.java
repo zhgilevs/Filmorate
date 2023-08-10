@@ -9,11 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.DatabaseException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.director.Director;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.StorageUtils;
 
 import java.sql.Date;

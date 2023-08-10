@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import ru.yandex.practicum.filmorate.model.director.Director;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

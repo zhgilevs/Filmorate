@@ -1,7 +1,8 @@
-package ru.yandex.practicum.filmorate.storage.director;
+package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.director.Director;
+import ru.yandex.practicum.filmorate.storage.director.DirectorsStorage;
 
 import java.util.HashSet;
 import java.util.List;
