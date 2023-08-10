@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.review;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,6 +21,7 @@ import java.util.Objects;
 @Component("DbReviewStorage")
 @Primary
 @RequiredArgsConstructor
+@Slf4j
 public class DbReviewStorage implements ReviewStorage {
 
     private final JdbcOperations jdbcTemplate;
@@ -38,6 +40,7 @@ public class DbReviewStorage implements ReviewStorage {
         }, keyHolder);
         int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
         review.setReviewId(id);
+        log.info("Отзыв с ID: '{}' создан", id);
         return review;
     }
 
@@ -49,6 +52,7 @@ public class DbReviewStorage implements ReviewStorage {
                 review.getContent(),
                 review.getIsPositive(),
                 reviewId);
+        log.info("Отзыв с ID: '{}' обновлен", reviewId);
         return getById(reviewId);
     }
 
@@ -57,6 +61,7 @@ public class DbReviewStorage implements ReviewStorage {
         int reviewId = getById(id).getReviewId();
         String sqlQuery = "DELETE FROM REVIEWS WHERE REVIEW_ID = ?";
         jdbcTemplate.update(sqlQuery, id);
+        log.info("Отзыв с ID: '{}' удален", reviewId);
         return !isExists(reviewId);
     }
 
@@ -74,12 +79,14 @@ public class DbReviewStorage implements ReviewStorage {
     @Override
     public List<Review> get(int count) {
         String query = "SELECT * FROM REVIEWS ORDER BY USEFUL DESC LIMIT ?;";
+        log.info("Запрос {} полезных отзывов", count);
         return jdbcTemplate.query(query, (rs, rowNum) -> makeReview(rs), count);
     }
 
     @Override
     public List<Review> getByFilmId(int filmId, int count) {
         String query = "SELECT * FROM REVIEWS WHERE FILM_ID=? ORDER BY USEFUL DESC LIMIT ?;";
+        log.info("Запрос {} полезных отзывов фильма с ID: '{}'", count, filmId);
         return jdbcTemplate.query(query, (rs, rowNum) -> makeReview(rs), filmId, count);
     }
 
@@ -96,6 +103,7 @@ public class DbReviewStorage implements ReviewStorage {
             useful += 1;
             setUseful(useful, reviewId);
         }
+        log.info("На отзыв с ID: '{}' поставлен лайк от пользователя с ID: '{}'", reviewId, userId);
         return getById(reviewId);
     }
 
@@ -112,6 +120,7 @@ public class DbReviewStorage implements ReviewStorage {
             useful -= 1;
             setUseful(useful, reviewId);
         }
+        log.info("На отзыв с ID: '{}' поставлен дизлайк от пользователя с ID: '{}'", reviewId, userId);
         return getById(reviewId);
     }
 
@@ -123,6 +132,7 @@ public class DbReviewStorage implements ReviewStorage {
                 int useful = getUseful(reviewId);
                 useful -= 1;
                 setUseful(useful, reviewId);
+                log.info("У отзыва с ID: '{}' удален лайк от пользователя с ID: '{}'", reviewId, userId);
                 return true;
             } else {
                 return false;
@@ -140,6 +150,7 @@ public class DbReviewStorage implements ReviewStorage {
                 int useful = getUseful(reviewId);
                 useful += 1;
                 setUseful(useful, reviewId);
+                log.info("У отзыва с ID: '{}' удален дизлайк от пользователя с ID: '{}'", reviewId, userId);
                 return true;
             } else {
                 return false;
