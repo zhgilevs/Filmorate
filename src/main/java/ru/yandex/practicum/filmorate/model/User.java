@@ -18,9 +18,9 @@ import java.util.Set;
 @Builder
 public class User {
 
-    private int id;
     @JsonIgnore
     private final Set<Integer> friends = new HashSet<>();
+    private int id;
     private String name;
     @NotBlank
     @Email

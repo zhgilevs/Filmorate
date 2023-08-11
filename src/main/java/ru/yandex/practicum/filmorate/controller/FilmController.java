@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -8,6 +9,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
@@ -50,7 +52,34 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", value = "count") int count) {
-        return service.getPopular(count);
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", value = "count") int count,
+                                      @RequestParam(required = false) Integer genreId,
+                                      @RequestParam(required = false) Integer year) {
+        return service.getPopular(count, genreId, year);
+    }
+
+    @GetMapping("/director/{directorId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Film> getFilmsByDirector(@PathVariable int directorId,
+                                         @RequestParam(required = false) Optional<String> sortBy) {
+        return service.getFilmsByDirector(directorId, sortBy.orElse("likes"));
+    }
+
+    @DeleteMapping("/{filmId}")
+    Film deleteFilmById(@PathVariable int filmId) {
+        return service.deleteFilmById(filmId);
+    }
+
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Film> searchFilms(@RequestParam String query,
+                                  @RequestParam List<String> by) {
+        return service.searchFilms(query, by);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam int userId,
+                                     @RequestParam int friendId) {
+        return service.getCommonFilms(userId, friendId);
     }
 }

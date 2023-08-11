@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
@@ -72,7 +74,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopular(int count) {
+    public List<Film> getPopular(int count, Integer genreId, Integer year) {
         log.info("Запрошен список {} самых популярных фильмов", count);
         return films.values().stream()
                 .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
@@ -85,6 +87,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.containsKey(id);
     }
 
+    @Override
+    public List<Film> getFilmsByDirector(Director director) {
+        throw new NotImplementedException();
+    }
+
     private void validateReleaseDate(Film film) {
         if (film.getReleaseDate() == null) {
             throw new ValidationException("Дата релиза должна быть передана в запросе");
@@ -92,5 +99,20 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (film.getReleaseDate().isBefore(CINEMA_STARTING_POINT)) {
             throw new ValidationException("Дата релиза должна быть позже 1895-12-28");
         }
+    }
+
+    @Override
+    public Film deleteFilmById(int id) {
+        return getById(id);
+    }
+
+    @Override
+    public List<Film> searchFilms(boolean searchByTitle, boolean searchByDirector, String query) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return new ArrayList<>();
     }
 }

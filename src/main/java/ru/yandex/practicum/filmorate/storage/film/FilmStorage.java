@@ -1,13 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.List;
 
 public interface FilmStorage {
     List<Film> getAll();
 
-    List<Film> getPopular(int count);
+    List<Film> getPopular(int count, Integer genreId, Integer year);
 
     Film create(Film film);
 
@@ -20,4 +21,12 @@ public interface FilmStorage {
     Film removeLike(int id, int userId);
 
     boolean isExists(int id);
+
+    Film deleteFilmById(int id);
+
+    List<Film> getFilmsByDirector(Director director);
+
+    List<Film> searchFilms(boolean searchByTitle, boolean searchByDirector, String query);
+
+    List<Film> getCommonFilms(int userId, int friendId);
 }

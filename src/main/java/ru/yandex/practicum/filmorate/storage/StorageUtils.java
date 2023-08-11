@@ -3,7 +3,11 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.experimental.UtilityClass;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Mpa;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @UtilityClass
 public class StorageUtils {
@@ -19,5 +23,13 @@ public class StorageUtils {
                     .build();
         }
         return null;
+    }
+
+    public static Director directorMapRow(ResultSet rs, int rowNum) throws SQLException {
+        Director director = new Director();
+
+        director.setId(rs.getInt("DIRECTOR_ID"));
+        director.setName(rs.getString("NAME"));
+        return director;
     }
 }
